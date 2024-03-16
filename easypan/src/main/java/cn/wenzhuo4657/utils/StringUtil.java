@@ -5,6 +5,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 public class StringUtil {
 
     public static String getRandom_Number(Integer codeLength) {
-        return RandomStringUtils.random(codeLength,false,false);
+        return RandomStringUtils.randomNumeric(codeLength);
     }
 }

@@ -1,6 +1,8 @@
 package cn.wenzhuo4657.service.impl;
 
 import cn.wenzhuo4657.domain.HttpeCode;
+import cn.wenzhuo4657.domain.appconfig;
+import cn.wenzhuo4657.domain.dto.SenderDtoDefault;
 import cn.wenzhuo4657.domain.entity.EmailCode;
 import cn.wenzhuo4657.domain.entity.UserInfo;
 import cn.wenzhuo4657.exception.SystemException;
@@ -9,15 +11,22 @@ import cn.wenzhuo4657.mapper.UserInfoMapper;
 import cn.wenzhuo4657.service.EmailCodeService;
 import cn.wenzhuo4657.utils.StringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.catalina.User;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
+import  cn.wenzhuo4657.config.redisComponent;
+import javax.annotation.Resource;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 import java.util.Date;
 
 /**
@@ -30,10 +39,20 @@ import java.util.Date;
 @Service("emailCodeService")
 public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode> implements EmailCodeService {
 
+    private Logger logger= LoggerFactory.getLogger(EmailCodeServiceImpl.class);
     @Autowired
     private  EmailCodeMapper emailCodeMapper;
     @Autowired
     private UserInfoMapper userInfoMapper;
+
+    @Resource
+    private JavaMailSender sender;
+
+    @Resource
+    private appconfig appConfig;
+
+    @Resource
+    private  redisComponent redisComponent;
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void sendEmailcode(String email, Integer type) {
@@ -50,9 +69,13 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
 
 
         String code= StringUtil.getRandom_Number(HttpeCode.code_length);//生成随机验证码
+        sendEmail(email,code);
 
 //        将数据库中同邮箱的验证码停用
         emailCodeMapper.disableEmailCode(email);
+
+
+//
 
         EmailCode emailCode=new EmailCode();
         emailCode.setCode(code);
@@ -61,6 +84,26 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
         emailCode.setCreatTime(new Date());
         emailCodeMapper.insert(emailCode);
 
+
+
+    }
+
+    private void sendEmail(String email, String code) {
+        MimeMessage message=sender.createMimeMessage();
+        MimeMessageHelper helper= null;
+        try {
+            helper = new MimeMessageHelper(message,true);
+            helper.setFrom(appConfig.getUsername());
+            helper.setTo(email);
+            SenderDtoDefault senderDtoDefault=redisComponent.getSenderDtodefault();
+            helper.setSubject(senderDtoDefault.getMail_Title());
+            helper.setText(String.format(senderDtoDefault.getMail_text(),code));
+            helper.setSentDate(new Date());
+            sender.send(message);
+        } catch (MessagingException e) {
+            logger.info("{}",e);
+            throw  new SystemException(HttpeCode.SendEmail_no_OK);
+        }
 
 
     }
