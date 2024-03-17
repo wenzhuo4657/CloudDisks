@@ -1,7 +1,10 @@
 package cn.wenzhuo4657.controller;
 
+import cn.wenzhuo4657.annotation.Global_interceptor;
+import cn.wenzhuo4657.annotation.VerifyParam;
 import cn.wenzhuo4657.domain.HttpeCode;
 import cn.wenzhuo4657.domain.ResponseVo;
+import cn.wenzhuo4657.domain.VerifyRegexEnum;
 import cn.wenzhuo4657.domain.dto.CreateImageCode;
 import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.service.EmailCodeService;
@@ -47,8 +50,10 @@ public class userinfo_Controller {
 
 
 
-@PostMapping("sendEmailCode")
-    public ResponseVo sendEmail(HttpSession session,String email,String checkCode,Integer type){
+    @PostMapping("sendEmailCode")
+    @Global_interceptor(checkparams = true)
+    public ResponseVo sendEmail(HttpSession session,
+                                @VerifyParam(required = true,regex = VerifyRegexEnum.EMALL) String email, String checkCode, Integer type){
     try {
         if (! checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))){
             throw new SystemException(HttpeCode.Image_no_OK);

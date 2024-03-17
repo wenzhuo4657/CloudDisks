@@ -9,7 +9,8 @@ public enum HttpeCode {
     SYSTEM_ERROR(500, "出现错误"),
     Image_no_OK(505,"图片验证码不正确"),
     email_exits(506, "邮箱已存在"),
-    SendEmail_no_OK(507, "邮件发送失败");
+    SendEmail_no_OK(507, "邮件发送失败"),
+    params_No_Ok(508,"全局拦截器方法中，检测出不符合要求的str" );
     public static final Integer zero=0;
     public static final Integer  code_length=5;
     public static final Integer Status_Ok=1;//状态码是通用的，所以这里不做区分
