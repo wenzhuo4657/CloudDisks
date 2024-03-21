@@ -1,13 +1,14 @@
 package cn.wenzhuo4657.utils;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+
 
 public class StringUtil {
 
     public static String getRandom_Number(Integer codeLength) {
         return RandomStringUtils.randomNumeric(codeLength);
     }
-
     /**
     * @Author wenzhuo4657
     * @Description
@@ -24,4 +25,28 @@ public class StringUtil {
             return  false;
         }
     }
+
+    public static String getMd5(String password) {
+        return isEmpty(password)? null: DigestUtils.md5Hex(password);
+    }
+
+    /**
+    * @Author wenzhuo4657
+    * @Description 对传入路径进行校验，保证路径为非空且不存在越级读取
+    * @Date 12:01 2024-03-21
+    * @Param [path]
+    * @return boolean
+    **/
+
+    public  static  boolean pathIsOk(String path){
+        if (StringUtil.isEmpty(path)){
+            return  true;
+        }
+        if (path.contains("../")||path.contains("..\\")){
+            return  false;
+        }
+        return  true;
+    }
+
+
 }

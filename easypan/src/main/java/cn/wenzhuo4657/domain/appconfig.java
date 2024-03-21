@@ -9,11 +9,23 @@ public class appconfig {
     @Value("${spring.mail.username}")
     private  String username;
 
+    @Value("${admin.emails}")
+    private  String admin;
+
+    @Value("${project.folder}")
+    private  String projectFolder;
+
+
+    public String getProjectFolder() {
+        return projectFolder;
+    }
+
+    public String getAdmin() {
+        return admin;
+    }
+
     public String getUsername() {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
 }

@@ -55,9 +55,8 @@ public class CreateImageCode {
 
 //    生成图片
     public  void creatImage(){
-        int fontWidth=width/codeCount;//字体狂赌
-        int fontHeight=height-1;//字体高度
-        int codeY=height-8;
+        int fontWidth=width/codeCount;//字体宽度
+        int fontHeight=height/2+5;//字体高度
 
         //图像buffer
         bufferedImage=new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
@@ -65,31 +64,21 @@ public class CreateImageCode {
         g.setColor(getRandColor(200,250));
 
         g.fillRect(0,0,width,height);
-        Font font=new Font("Fixedsys",Font.BOLD,fontHeight);
-        //设置干扰线
+//        设置干扰线
         for (int i=0;i<lineCount;i++){
             int xs=random.nextInt(width);
             int ys=random.nextInt(height);
             int xe=xs+random.nextInt(width);
             int ye=ys+random.nextInt(height);
-            g.setColor(getRandColor(1,255));
+            g.setColor(getRandColor(100,120));
             g.drawLine(xs,ys,xe,ye);
         }
-//        添加噪点
-//        float yawpRate=0.01f;
-//        int area=(int) (yawpRate*width*height);
-//        for (int i=0;i<area;i++){
-//            int x=random.nextInt(width);
-//            int y=random.nextInt(height);
-//            bufferedImage.setRGB(x,y,random.nextInt(255));
-//        }
-
         String str1=randomStr(codeCount);
         this.code=str1;
         for(int i=0;i<codeCount;i++){
             String strRand=str1.substring(i,i+1);
-            g.setColor(getRandColor(1,255));
-            g.drawString(strRand,i*fontWidth+3,codeY);
+            g.setColor(getRandColor(1,100));
+            g.drawString(strRand,i*fontWidth+5,fontHeight+i);
         }
     }
 

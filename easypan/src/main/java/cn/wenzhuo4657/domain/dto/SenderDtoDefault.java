@@ -5,8 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SenderDtoDefault implements Serializable {
+public class SenderDtoDefault implements Serializable{
     private  String Mail_Title="邮箱验证码";
     private  String Mail_text="你好，你的邮箱验证码是：%s.15分钟有效";
     private  Integer userInitUserSpace=5;

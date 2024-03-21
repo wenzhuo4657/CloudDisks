@@ -2,6 +2,8 @@ package cn.wenzhuo4657.domain.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,9 +34,12 @@ public class UserInfo  {
     private String qqAvatar;
     
     private String password;
-    
+
+
+
+    @TableField(fill = FieldFill.INSERT)
     private Date creatTime;
-    
+    @TableField(fill = FieldFill.UPDATE)
     private Date updateTime;
     //用户状态，0表禁用，1表正常
     private Integer status;

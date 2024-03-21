@@ -3,6 +3,9 @@ package cn.wenzhuo4657.domain.entity;
 import java.util.Date;
 
 import java.io.Serializable;
+
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +30,7 @@ public class EmailCode  {
     private String code;
 
     //创建时间
+    @TableField(fill = FieldFill.INSERT)
     private Date creatTime;
     //0:使用；1未使用
     private Integer status;

@@ -4,7 +4,12 @@
 
     <update id="disableEmailCode">
         update email_code
-        set status=1
-        where  email=#{email} and status=0
+        set status=0
+        where  email=#{email} and status=1
     </update>
+    <select id="selectByEmail" resultType="cn.wenzhuo4657.domain.entity.EmailCode">
+        select  *
+        from  email_code
+        where email=#{email} and status=1
+    </select>
 </mapper>

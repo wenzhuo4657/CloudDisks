@@ -1,5 +1,6 @@
 package cn.wenzhuo4657.service;
 
+import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.entity.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -12,4 +13,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface UserInfoService extends IService<UserInfo> {
 
+    void register(String email, String nickName, String password, String emailCode);
+
+    SessionDto login(String email, String password);
+
+
+    void resetPwd(String email, String password, String emailCode);
 }

@@ -20,6 +20,11 @@ public class ResponseVo<T> {
         r.setInfo("成功！！！");
         return  r;
     }
+    public static ResponseVo ok(String info) {
+        ResponseVo r=ok();
+        r.setData(info.toString());
+        return  r;
+    }
 
     public static ResponseVo error(String info){
         ResponseVo r=new ResponseVo<>();
@@ -35,6 +40,6 @@ public class ResponseVo<T> {
         r.setInfo(info);
         r.setData(data);
         return  r;
-
     }
+
 }

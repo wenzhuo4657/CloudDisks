@@ -28,7 +28,7 @@ public class VerifUtils {
         }
         Pattern pattern=Pattern.compile(regex);
         Matcher matcher=pattern.matcher(res);
-        return  matcher.matches();
+        return  !matcher.matches();
     }
 
     public  static  boolean verify(VerifyRegexEnum regex,String res){

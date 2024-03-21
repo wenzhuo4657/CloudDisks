@@ -14,4 +14,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface EmailCodeService extends IService<EmailCode> {
 
     void sendEmailcode(String email, Integer type);
+
+    void calibration(String email, String emailCode);
+
+
 }

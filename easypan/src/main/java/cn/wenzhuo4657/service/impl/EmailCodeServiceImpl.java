@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import javax.annotation.Resource;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.http.HttpServlet;
 import java.util.Date;
 
 /**
@@ -71,7 +73,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
         String code= StringUtil.getRandom_Number(HttpeCode.code_length);//生成随机验证码
         sendEmail(email,code);
 
-//        将数据库中同邮箱的验证码停用
+//        将数据库中同邮箱的所有验证码停用
         emailCodeMapper.disableEmailCode(email);
 
 
@@ -80,7 +82,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
         EmailCode emailCode=new EmailCode();
         emailCode.setCode(code);
         emailCode.setEmail(email);
-        emailCode.setStatus(HttpeCode.zero);
+        emailCode.setStatus(HttpeCode.email_statusOne);
         emailCode.setCreatTime(new Date());
         emailCodeMapper.insert(emailCode);
 
@@ -104,7 +106,27 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
             logger.info("{}",e);
             throw  new SystemException(HttpeCode.SendEmail_no_OK);
         }
-
-
     }
+
+
+
+
+    @Override
+    public  void  calibration(String email, String emailCode){
+        LambdaQueryWrapper<EmailCode> wrapper=new LambdaQueryWrapper<>();
+        wrapper.eq(EmailCode::getEmail,email);
+        wrapper.eq(EmailCode::getStatus,1);
+        EmailCode ema=emailCodeMapper.selectOne(wrapper);
+        if (ema==null){
+            throw  new SystemException("验证码未发送,请发送验证码");
+        }
+//        if (ema.getCode()!=emailCode||
+//                System.currentTimeMillis()-ema.getCreatTime().getTime()> HttpeCode.Email_Length *60*1000){
+//            throw new SystemException("验证码无效;可能原因有，过期、不正确");
+//        }
+        emailCodeMapper.disableEmailCode(email);
+    }
+
+
+
 }
