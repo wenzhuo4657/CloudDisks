@@ -1,4 +1,4 @@
-package cn.wenzhuo4657.domain;
+package cn.wenzhuo4657.domain.enums;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +14,7 @@ public class appconfig {
 
     @Value("${project.folder}")
     private  String projectFolder;
+
 
 
     public String getProjectFolder() {

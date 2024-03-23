@@ -1,15 +1,13 @@
 package cn.wenzhuo4657.controller;
 
-import cn.wenzhuo4657.domain.HttpeCode;
+import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.utils.StringUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;

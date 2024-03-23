@@ -2,7 +2,9 @@ package cn.wenzhuo4657.aspect;
 
 import cn.wenzhuo4657.annotation.Global_interceptor;
 import cn.wenzhuo4657.annotation.VerifyParam;
-import cn.wenzhuo4657.domain.HttpeCode;
+import cn.wenzhuo4657.domain.enums.HttpeCode;
+import cn.wenzhuo4657.domain.enums.ResponseEnum;
+import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.utils.StringUtil;
 import cn.wenzhuo4657.utils.VerifUtils;
@@ -14,23 +16,17 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.io.File;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Objects;
 
-import static org.springframework.cglib.core.Constants.*;
 
-
-/**
- * @className: ${NAME}
- * @author: LXHYouth
- * @date: ${DATE} ${TIME}
- * @Version: 1.0
- * @description:
- */
 @Aspect
 @Component
 public class GlobalOperatcion {
@@ -51,16 +47,34 @@ public class GlobalOperatcion {
             if (null==interceptor){
                 return;
             }
+            //校验登录
+            if(interceptor.checkLogin()|| interceptor.checkAdmin()){
+                checkLogin( interceptor.checkAdmin());
+            }
             if(interceptor.checkparams()){
 //                如果开启了参数校验，就进行校验
                 validateParams(method,arguments);
             }
+
+
         } catch (Exception e) {
             logger.info("全局拦截器异常：:{}",e);
             throw e;
         }
 
 
+    }
+
+    private void checkLogin(boolean checkAdmin) {
+        HttpServletRequest request= ((ServletRequestAttributes)RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpSession session= request.getSession();
+        SessionDto sessionDto= (SessionDto) session.getAttribute(HttpeCode.SessionDto_key);
+        if (null==sessionDto){
+            throw  new SystemException(ResponseEnum.CODE_901);
+        }
+        if (checkAdmin&&!sessionDto.getAdmin()){
+            throw  new SystemException( ResponseEnum.CODE_902);
+        }
     }
 
     private void validateParams(Method method, Object[] arguments) {

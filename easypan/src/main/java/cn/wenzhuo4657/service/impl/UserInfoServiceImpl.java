@@ -1,12 +1,12 @@
 package cn.wenzhuo4657.service.impl;
 
-import cn.wenzhuo4657.config.RedisConfig;
-import cn.wenzhuo4657.domain.HttpeCode;
-import cn.wenzhuo4657.domain.appconfig;
+
+import cn.wenzhuo4657.config.RedisCache;
+import cn.wenzhuo4657.domain.enums.HttpeCode;
+import cn.wenzhuo4657.domain.enums.appconfig;
 import cn.wenzhuo4657.domain.dto.SenderDtoDefault;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.dto.UserSpace;
-import cn.wenzhuo4657.domain.entity.EmailCode;
 import cn.wenzhuo4657.domain.entity.UserInfo;
 import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.mapper.UserInfoMapper;
@@ -17,16 +17,12 @@ import cn.wenzhuo4657.utils.StringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.ibatis.jdbc.Null;
-import org.apache.tomcat.jni.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import cn.wenzhuo4657.config.redisComponent;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.lang.invoke.LambdaMetafactory;
-import java.lang.reflect.Parameter;
 
 /**
  * (UserInfo)表服务实现类
@@ -44,7 +40,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
     @Autowired
     private  redisComponent redisComponent;
     @Resource
-    private RedisConfig redisConfig;
+    private RedisCache redisConfig;
 
     @Autowired
     private appconfig appconfig;

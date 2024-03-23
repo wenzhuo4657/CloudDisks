@@ -1,7 +1,7 @@
 package cn.wenzhuo4657.annotation;
 
 
-import cn.wenzhuo4657.domain.VerifyRegexEnum;
+import cn.wenzhuo4657.domain.enums.VerifyRegexEnum;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

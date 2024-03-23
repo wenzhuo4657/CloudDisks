@@ -1,7 +1,7 @@
 package cn.wenzhuo4657.service.impl;
 
-import cn.wenzhuo4657.domain.HttpeCode;
-import cn.wenzhuo4657.domain.appconfig;
+import cn.wenzhuo4657.domain.enums.HttpeCode;
+import cn.wenzhuo4657.domain.enums.appconfig;
 import cn.wenzhuo4657.domain.dto.SenderDtoDefault;
 import cn.wenzhuo4657.domain.entity.EmailCode;
 import cn.wenzhuo4657.domain.entity.UserInfo;
@@ -14,7 +14,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +27,6 @@ import javax.annotation.Resource;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServlet;
 import java.util.Date;
 
 /**

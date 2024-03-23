@@ -1,4 +1,4 @@
-package cn.wenzhuo4657.domain;
+package cn.wenzhuo4657.domain.enums;
 
 public enum VerifyRegexEnum {
     NO("","不校验"),

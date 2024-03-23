@@ -11,8 +11,9 @@ import java.io.Serializable;
  * @Version: 1.0
  * @description:
  */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SessionDto implements Serializable {
+public class SessionDto implements Serializable  {
     private  String nickName;
     private  String userId;
     private  Boolean isAdmin;
@@ -48,5 +49,15 @@ public class SessionDto implements Serializable {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    @Override
+    public String toString() {
+        return "SessionDto{" +
+                "nickName='" + nickName + '\'' +
+                ", userId='" + userId + '\'' +
+                ", isAdmin=" + isAdmin +
+                ", avatar='" + avatar + '\'' +
+                '}';
     }
 }

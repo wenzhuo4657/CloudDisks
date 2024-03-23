@@ -11,8 +11,8 @@ import java.io.Serializable;
  * @Version: 1.0
  * @description:
  */
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class UserSpace implements Serializable {
+
+public class UserSpace {
     private long usespace;
     private  long totalSpace;
 

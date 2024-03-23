@@ -1,6 +1,6 @@
 package cn.wenzhuo4657.utils;
 
-import cn.wenzhuo4657.domain.VerifyRegexEnum;
+import cn.wenzhuo4657.domain.enums.VerifyRegexEnum;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

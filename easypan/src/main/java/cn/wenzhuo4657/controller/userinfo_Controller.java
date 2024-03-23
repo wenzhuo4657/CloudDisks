@@ -3,10 +3,10 @@ package cn.wenzhuo4657.controller;
 import cn.wenzhuo4657.annotation.Global_interceptor;
 import cn.wenzhuo4657.annotation.VerifyParam;
 import cn.wenzhuo4657.config.redisComponent;
-import cn.wenzhuo4657.domain.HttpeCode;
+import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.ResponseVo;
-import cn.wenzhuo4657.domain.VerifyRegexEnum;
-import cn.wenzhuo4657.domain.appconfig;
+import cn.wenzhuo4657.domain.enums.VerifyRegexEnum;
+import cn.wenzhuo4657.domain.enums.appconfig;
 import cn.wenzhuo4657.domain.dto.CreateImageCode;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.dto.UserSpace;
@@ -59,12 +59,12 @@ public class userinfo_Controller extends  ControllerSupport{
 
 
     @PostMapping("sendEmailCode")
-    @Global_interceptor(checkparams = true)
+    @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo sendEmail(HttpSession session, @VerifyParam(required = true, regex = VerifyRegexEnum.EMALL) String email, String checkCode, Integer type) {
         try {
-            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
-                throw new SystemException(HttpeCode.Image_no_OK);
-            }
+//            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
+//                throw new SystemException(HttpeCode.Image_no_OK);
+//            }
             emailCodeService.sendEmailcode(email, type);
             return ResponseVo.ok();
         } finally {
@@ -74,7 +74,7 @@ public class userinfo_Controller extends  ControllerSupport{
     }
 
     @PostMapping("/register")
-    @Global_interceptor(checkparams = true)
+    @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo register(HttpSession session,  String email,String nickName,  String password, String checkCode, String emailCode) {
         try {
             if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
@@ -89,7 +89,7 @@ public class userinfo_Controller extends  ControllerSupport{
     }
 
     @PostMapping("/login")
-    @Global_interceptor(checkparams = true)
+    @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo login(HttpSession session, String email, String password, String checkCode, Integer type) {
         try {
 //            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_NO_Ok))) {
@@ -97,7 +97,7 @@ public class userinfo_Controller extends  ControllerSupport{
 //            }
             SessionDto sessionDto = userInfoService.login(email,  password);
             session.setAttribute(HttpeCode.SessionDto_key,sessionDto);
-            return ResponseVo.ok(sessionDto.toString());
+            return ResponseVo.ok(sessionDto);
         } finally {
         session.removeAttribute(HttpeCode.Check_NO_Ok);
 //        无论是否成功发送，图形验证码都将再次刷新，需要重新进行图形验证
@@ -105,7 +105,7 @@ public class userinfo_Controller extends  ControllerSupport{
     }
 
     @PostMapping("/resetPwd")
-    @Global_interceptor(checkparams = true)
+    @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo resetPwd(HttpSession session,
                                String email,
                                String password, String checkCode,
@@ -184,13 +184,13 @@ public class userinfo_Controller extends  ControllerSupport{
     private redisComponent redisComponent;
 
     @PostMapping ("/getUseSpace")
-    @Global_interceptor(checkparams = true)
+    @Global_interceptor(checkparams = true,checkLogin = true)
     public ResponseVo getUseSpace(HttpSession session){
         UserSpace userSpace=redisComponent.getUserSpaceUser(getUserInfofromSession(session).getUserId());
-        return ResponseVo.ok(userSpace.toString());
+        return ResponseVo.ok(userSpace);
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     @Global_interceptor(checkparams = true)
     public  ResponseVo logout(HttpSession session){
         session.invalidate();
@@ -198,7 +198,7 @@ public class userinfo_Controller extends  ControllerSupport{
     }
 
     @PostMapping("/updateUserAvatar")
-    @Global_interceptor
+    @Global_interceptor(checkparams = true)
     public  ResponseVo updateUserAvatar(HttpSession session, MultipartFile avatar){
         SessionDto useINFO=getUserInfofromSession(session);
         String basefolder=appconfig.getProjectFolder()+HttpeCode.File_Folder_root;
@@ -223,7 +223,7 @@ public class userinfo_Controller extends  ControllerSupport{
     }
 
     @PostMapping("/updatePassword")
-    @Global_interceptor(checkparams = true)
+    @Global_interceptor(checkparams = true,checkLogin = false)
     public  ResponseVo updatePassword(HttpSession session
             ,@VerifyParam(required = true,regex = VerifyRegexEnum.PASSWORD,min = 5,max = 20)String password){
         SessionDto sessionDto=getUserInfofromSession(session);

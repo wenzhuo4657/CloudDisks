@@ -1,6 +1,7 @@
 package cn.wenzhuo4657.exception;
 
-import cn.wenzhuo4657.domain.HttpeCode;
+import cn.wenzhuo4657.domain.enums.HttpeCode;
+import cn.wenzhuo4657.domain.enums.ResponseEnum;
 
 
 public class SystemException extends  RuntimeException{
@@ -18,6 +19,12 @@ public class SystemException extends  RuntimeException{
     }
 
     public SystemException(HttpeCode httpCodeEnum) {
+        super(httpCodeEnum.getMsg());
+        //把某个枚举类里面的code和msg赋值给异常对象
+        this.code = httpCodeEnum.getCode();
+        this.msg = httpCodeEnum.getMsg();
+    }
+    public SystemException(ResponseEnum httpCodeEnum) {
         super(httpCodeEnum.getMsg());
         //把某个枚举类里面的code和msg赋值给异常对象
         this.code = httpCodeEnum.getCode();

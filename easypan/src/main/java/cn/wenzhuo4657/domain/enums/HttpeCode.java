@@ -1,12 +1,11 @@
-package cn.wenzhuo4657.domain;
+package cn.wenzhuo4657.domain.enums;
 
 
 import lombok.Data;
 
 
 public enum HttpeCode {
-    SUCCESS(200, "操作成功"),
-    SYSTEM_ERROR(500, "出现错误"),
+
     Image_no_OK(505,"图片验证码不正确"),
     email_exits(506, "邮箱已存在"),
     SendEmail_no_OK(507, "邮件发送失败"),
@@ -28,6 +27,7 @@ public enum HttpeCode {
     public static Integer zero=0;
     public static String File_Folder_root="/file";
     public static String File_Folder_AvvatarName="/avater";
+    public static String LoadDataList_File_sort="last_update_time";
 
     int code;
     String msg;
@@ -45,15 +45,11 @@ public enum HttpeCode {
         return code;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
+
 
     public String getMsg() {
         return msg;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
+
 }

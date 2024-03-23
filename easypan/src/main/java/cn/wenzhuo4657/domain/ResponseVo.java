@@ -16,13 +16,14 @@ public class ResponseVo<T> {
 
     public static ResponseVo ok() {
         ResponseVo r=new ResponseVo<>();
+        r.setStatus("success");
         r.setCode(200);
         r.setInfo("成功！！！");
         return  r;
     }
-    public static ResponseVo ok(String info) {
+    public static ResponseVo ok(Object info) {
         ResponseVo r=ok();
-        r.setData(info.toString());
+        r.setData(info);
         return  r;
     }
 
@@ -42,4 +43,13 @@ public class ResponseVo<T> {
         return  r;
     }
 
+    @Override
+    public String toString() {
+        return "ResponseVo{" +
+                "status='" + status + '\'' +
+                ", code=" + code +
+                ", info='" + info + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }
