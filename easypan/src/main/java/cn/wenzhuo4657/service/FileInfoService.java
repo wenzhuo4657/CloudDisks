@@ -2,9 +2,12 @@ package cn.wenzhuo4657.service;
 
 import cn.wenzhuo4657.domain.dto.FileInfoDto;
 import cn.wenzhuo4657.domain.dto.PaginationResultDto;
+import cn.wenzhuo4657.domain.dto.SessionDto;
+import cn.wenzhuo4657.domain.dto.UploadResultDto;
 import cn.wenzhuo4657.domain.entity.FileInfo;
 import cn.wenzhuo4657.domain.query.FileInfoQuery;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -15,5 +18,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface FileInfoService extends IService<FileInfo> {
 
+
     PaginationResultDto<FileInfoDto> findListBypage(FileInfoQuery query);
+
+    UploadResultDto uploadFile(SessionDto sessionDto, String fileId, MultipartFile file, String filename, String filePid, String fileMd5, Integer chunkIndex, Integer chunks);
 }

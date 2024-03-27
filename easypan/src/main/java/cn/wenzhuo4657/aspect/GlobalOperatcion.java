@@ -73,7 +73,7 @@ public class GlobalOperatcion {
             throw  new SystemException(ResponseEnum.CODE_901);
         }
         if (checkAdmin&&!sessionDto.getAdmin()){
-            throw  new SystemException( ResponseEnum.CODE_902);
+            throw  new SystemException( ResponseEnum.CODE_901);
         }
     }
 

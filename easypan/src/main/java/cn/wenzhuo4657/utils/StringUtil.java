@@ -1,5 +1,6 @@
 package cn.wenzhuo4657.utils;
 
+import cn.wenzhuo4657.domain.enums.HttpeCode;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -47,6 +48,41 @@ public class StringUtil {
         }
         return  true;
     }
+
+    /**
+    * @Author wenzhuo4657
+    * @Description 对文件进行重命名，每次调用，随机数字部分都会增长，
+    * @Date 20:17 2024-03-26
+    * @Param [filename]
+    * @return java.lang.String
+    **/
+
+    public  static  String rename(String filename){
+        String fileNameReal=getFileName_Suffix(filename);
+        String suffix=getFileSuffix(filename);
+        return  fileNameReal+"_"+getRandom_Number(HttpeCode.code_length)+suffix;
+    }
+
+    private static String getFileSuffix(String filename) {
+        Integer index=filename.lastIndexOf(".");
+        if (index==-1){
+            return "";
+        }
+        String Suffix=filename.substring(index);
+        return  Suffix;
+
+    }
+
+    private static String getFileName_Suffix(String filename) {
+        Integer index=filename.lastIndexOf(".");
+        if (index==-1){
+            return  filename;
+        }
+        filename=filename.substring(0,index);
+        return  filename;
+    }
+
+
 
 
 }

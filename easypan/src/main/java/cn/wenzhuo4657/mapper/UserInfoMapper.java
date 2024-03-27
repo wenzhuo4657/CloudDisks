@@ -16,4 +16,6 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
 
 
     UserInfo selectByNickName(String nickName);
+
+    Integer updateUserSpace(String userId, Long fileSize);
 }

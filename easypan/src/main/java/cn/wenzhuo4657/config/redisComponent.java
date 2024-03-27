@@ -3,6 +3,7 @@ package cn.wenzhuo4657.config;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.dto.SenderDtoDefault;
 import cn.wenzhuo4657.domain.dto.UserSpace;
+import cn.wenzhuo4657.mapper.FileInfoMapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -20,14 +21,12 @@ public class redisComponent {
         }
         return  senderDtoDefault;
     }
-    public UserSpace saveUserid_space(String userID, String total_Space){
-        UserSpace userSpace= (UserSpace) redisConfig.getCacheObject(HttpeCode.redis_userid_space+userID);
-        if (null==userSpace){
-            userSpace=new UserSpace();
-            userSpace.setTotalSpace(Long.parseLong(total_Space));
-            redisConfig.setCacheObject(HttpeCode.redis_userid_space+userID,userSpace);
-        }
-        return  userSpace;
+    @Resource
+    private FileInfoMapper fileInfoMapper;
+    public void saveUserid_space(String userID, UserSpace space){
+        //  wenzhuo TODO 2024/3/27 : 时间颗粒度和时间的使用，此处暂且不改变键值对的生命周期
+        redisConfig.setCacheObject(HttpeCode.redis_userid_space+userID,space);
+
     }
 
     public  UserSpace getUserSpaceUser(String userId){
@@ -36,7 +35,7 @@ public class redisComponent {
             space=new UserSpace();
             space.setUsespace(0L);
             space.setTotalSpace(getSenderDtodefault().getUserInitUserSpace()*HttpeCode.MB);
-            saveUserid_space(userId, String.valueOf(space.getTotalSpace()));
+            saveUserid_space(userId,space);
         }
         return  space;
     }

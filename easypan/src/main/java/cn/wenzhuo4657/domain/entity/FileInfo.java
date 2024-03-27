@@ -53,5 +53,6 @@ public class FileInfo {
     private Integer delFlag;
     //进入回收站的时间
     private Date removeTime;
-    
+
+
 }

@@ -5,15 +5,19 @@ import lombok.Data;
 
 /**
  * @author: 35238
- * 功能:
+ * 功能:对结果集进行限定
  * 时间: 2023-12-08 09:36
  */
 @Data
 public class SimplePage {
     private int pageNo;
-    private int countTotal;
-    private int pageSize;
-    private int pageTotal;
+    private int countTotal;//总记录长度
+    private int pageSize;//页的大小
+    private int pageTotal;//总页数
+
+
+//    start、end表示限定了表示返回结果的长度和位置，在sql语句中使用为
+//    limit #{simplePage.start},#{simplePage.end}
     private int start;
     private int end;
 

@@ -9,6 +9,7 @@ import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.dto.UserSpace;
 import cn.wenzhuo4657.domain.entity.UserInfo;
 import cn.wenzhuo4657.exception.SystemException;
+import cn.wenzhuo4657.mapper.FileInfoMapper;
 import cn.wenzhuo4657.mapper.UserInfoMapper;
 import cn.wenzhuo4657.service.EmailCodeService;
 import cn.wenzhuo4657.service.UserInfoService;
@@ -75,6 +76,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         new_user.setUserSpace(0L);
         this.mapper.insert(new_user);
     }
+    @Resource
+    private FileInfoMapper fileInfoMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -104,8 +107,9 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             sessionDto.setAdmin(false);
         }
         UserSpace userSpace=new UserSpace();
+        userSpace.setUsespace(fileInfoMapper.selectAllByUserIdLong(sessionDto.getUserId()));
         userSpace.setTotalSpace(userInfo.getTotalSpace());
-        redisComponent.saveUserid_space(userInfo.getUserId(),userInfo.getTotalSpace().toString());
+        redisComponent.saveUserid_space(userInfo.getUserId(),userSpace);
         return sessionDto;
     }
 

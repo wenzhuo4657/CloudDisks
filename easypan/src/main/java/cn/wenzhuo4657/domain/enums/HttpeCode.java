@@ -28,6 +28,7 @@ public enum HttpeCode {
     public static String File_Folder_root="/file";
     public static String File_Folder_AvvatarName="/avater";
     public static String LoadDataList_File_sort="last_update_time";
+    public static String Tempfolder_UploadFile="/temp/uploadFile";
 
     int code;
     String msg;
