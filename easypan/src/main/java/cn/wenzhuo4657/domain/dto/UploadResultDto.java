@@ -1,6 +1,7 @@
 package cn.wenzhuo4657.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
 
 import java.io.Serializable;
 
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * @description:
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 public class UploadResultDto implements Serializable {
     private  String fileid;
     private  String status;
@@ -31,4 +33,6 @@ public class UploadResultDto implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+
+
 }

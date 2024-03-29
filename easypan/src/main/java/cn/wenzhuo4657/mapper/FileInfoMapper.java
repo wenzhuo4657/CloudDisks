@@ -34,4 +34,6 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
     * @return java.util.List<cn.wenzhuo4657.domain.entity.FileInfo>
     **/
     List<FileInfo> findListByInfoQuery(FileInfoQuery infoQuery);
+
+    FileInfo selectByFileidAndUserid(String fileId, String userId);
 }

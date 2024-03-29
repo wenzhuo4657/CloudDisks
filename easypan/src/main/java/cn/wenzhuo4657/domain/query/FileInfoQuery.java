@@ -102,7 +102,7 @@ public class FileInfoQuery extends BaseParam{
     /**
      * 回收站时间
      */
-    private String recoveryTime;
+    private String removeTime;
     private String recoveryTimeStart;
     private String recoveryTimeEnd;
 

@@ -1,5 +1,6 @@
 package cn.wenzhuo4657.domain.dto;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +19,7 @@ public class FileInfoDto implements Serializable {
     /**
      * 文件ID
      */
+    @TableId
     private String fileId;
 
     /**

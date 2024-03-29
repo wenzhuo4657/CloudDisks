@@ -63,7 +63,7 @@ public class StringUtil {
         return  fileNameReal+"_"+getRandom_Number(HttpeCode.code_length)+suffix;
     }
 
-    private static String getFileSuffix(String filename) {
+    public static String getFileSuffix(String filename) {
         Integer index=filename.lastIndexOf(".");
         if (index==-1){
             return "";
@@ -73,7 +73,8 @@ public class StringUtil {
 
     }
 
-    private static String getFileName_Suffix(String filename) {
+
+  public static String getFileName_Suffix(String filename) {
         Integer index=filename.lastIndexOf(".");
         if (index==-1){
             return  filename;

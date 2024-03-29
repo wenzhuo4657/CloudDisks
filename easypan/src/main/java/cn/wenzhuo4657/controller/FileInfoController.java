@@ -58,21 +58,16 @@ public class FileInfoController extends  ControllerSupport{
     public  ResponseVo uploadFile(
             HttpSession session,
             String fileId, MultipartFile file,
-            @VerifyParam(required = true) String filename,
+            @VerifyParam(required = true) String fileName,
             @VerifyParam(required = true) String filePid,
             @VerifyParam(required = true) String fileMd5,
             @VerifyParam(required = true) Integer chunkIndex,
             @VerifyParam(required = true) Integer chunks
             ){
         SessionDto sessionDto=getUserInfofromSession(session);
-        UploadResultDto resultDto=fileInfoService.uploadFile(sessionDto,fileId,file,filename,filePid,fileMd5,chunkIndex,chunks);
+        UploadResultDto resultDto=fileInfoService.uploadFile(sessionDto,fileId,file,fileName,filePid,fileMd5,chunkIndex,chunks);
 
-        return  ResponseVo.ok();
+        return  ResponseVo.ok(resultDto);
     }
-
-
-
-
-
 }
 

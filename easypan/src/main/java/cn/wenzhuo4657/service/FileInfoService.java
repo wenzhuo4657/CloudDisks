@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileInfoService extends IService<FileInfo> {
 
 
+     void transferFile(String fileId, SessionDto sessionDto) ;
+
     PaginationResultDto<FileInfoDto> findListBypage(FileInfoQuery query);
 
     UploadResultDto uploadFile(SessionDto sessionDto, String fileId, MultipartFile file, String filename, String filePid, String fileMd5, Integer chunkIndex, Integer chunks);

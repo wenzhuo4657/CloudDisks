@@ -17,12 +17,12 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     //只要对数据库执行了插入语句，那么就会执行到这个方法
     public void insertFill(MetaObject metaObject) {
-        this.setFieldValByName("createTime", new Date(), metaObject);
-        this.setFieldValByName("updateTime", new Date(), metaObject);
+        this.setFieldValByName("create_time", new Date(), metaObject);
+        this.setFieldValByName("update_time", new Date(), metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setFieldValByName("updateTime", new Date(), metaObject);
+        this.setFieldValByName("update_time", new Date(), metaObject);
     }
 }

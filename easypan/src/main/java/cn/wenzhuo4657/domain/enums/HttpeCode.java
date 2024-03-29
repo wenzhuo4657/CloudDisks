@@ -9,7 +9,10 @@ public enum HttpeCode {
     Image_no_OK(505,"图片验证码不正确"),
     email_exits(506, "邮箱已存在"),
     SendEmail_no_OK(507, "邮件发送失败"),
-    params_No_Ok(508,"全局拦截器方法中，检测出不符合要求的str" );
+    params_No_Ok(508,"全局拦截器方法中，检测出不符合要求的str" ),
+    UPLOAD_FOLDER_NOT_EXIT(509, "转码文件不存在"),
+    UPLOAD_MERGE_ONE_FAIL(510, "转码失败"),
+    UPLOAD_MERGE_FILE_FAIL(511, "关闭流失败");
     public static final Integer email_statusOne=1;
     public static final Integer  code_length=5;
     public static final Integer Status_Ok=1;//状态码是通用的，所以这里不做区分
@@ -29,6 +32,10 @@ public enum HttpeCode {
     public static String File_Folder_AvvatarName="/avater";
     public static String LoadDataList_File_sort="last_update_time";
     public static String Tempfolder_UploadFile="/temp/uploadFile";
+    public static String redis_TempSize="TempSize";
+    public static String tempFile="tempFile";
+    public static String File_userid="File_userid";
+    public static String UPLOAD_IO_CLOSE_FAIL="关闭流失败";
 
     int code;
     String msg;

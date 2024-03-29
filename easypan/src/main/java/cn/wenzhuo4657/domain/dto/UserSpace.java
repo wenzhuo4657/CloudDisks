@@ -13,15 +13,15 @@ import java.io.Serializable;
  */
 
 public class UserSpace {
-    private long usespace;
+    private long useSpace;
     private  long totalSpace;
 
     public long getUsespace() {
-        return usespace;
+        return useSpace;
     }
 
     public void setUsespace(long usespace) {
-        this.usespace = usespace;
+        this.useSpace = usespace;
     }
 
     public long getTotalSpace() {
@@ -36,7 +36,7 @@ public class UserSpace {
     @Override
     public String toString() {
         return "UserSpace{" +
-                "usespace=" + usespace +
+                "useSpace=" + useSpace +
                 ", totalSpace=" + totalSpace +
                 '}';
     }
