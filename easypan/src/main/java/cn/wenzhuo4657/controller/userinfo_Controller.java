@@ -3,6 +3,7 @@ package cn.wenzhuo4657.controller;
 import cn.wenzhuo4657.annotation.Global_interceptor;
 import cn.wenzhuo4657.annotation.VerifyParam;
 import cn.wenzhuo4657.config.redisComponent;
+import cn.wenzhuo4657.controller.support.ControllerSupport;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.ResponseVo;
 import cn.wenzhuo4657.domain.enums.VerifyRegexEnum;
@@ -11,7 +12,6 @@ import cn.wenzhuo4657.domain.dto.CreateImageCode;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.dto.UserSpace;
 import cn.wenzhuo4657.domain.entity.UserInfo;
-import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.service.UserInfoService;
 import cn.wenzhuo4657.service.impl.EmailCodeServiceImpl;
 import cn.wenzhuo4657.utils.StringUtil;
@@ -32,7 +32,7 @@ import java.io.PrintWriter;
 
 
 @RestController("userinfoController")//这里指定了rest控制器的名称，默认情况下是类名
-public class userinfo_Controller extends  ControllerSupport{
+public class userinfo_Controller extends ControllerSupport {
     @Resource
     private UserInfoService userInfoService;
 
@@ -77,9 +77,10 @@ public class userinfo_Controller extends  ControllerSupport{
     @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo register(HttpSession session,  String email,String nickName,  String password, String checkCode, String emailCode) {
         try {
-            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
-                throw new SystemException(HttpeCode.Image_no_OK);
-            }
+            //  wenzhuo TODO 2024/3/30 : 验证码逻辑混乱，且生成验证码大小写似乎有错误
+//            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
+//                throw new SystemException(HttpeCode.Image_no_OK);
+//            }
             userInfoService.register(email, nickName, password, emailCode);
             return ResponseVo.ok();
         } finally {
@@ -183,11 +184,11 @@ public class userinfo_Controller extends  ControllerSupport{
     @Resource
     private redisComponent redisComponent;
 
+
     @PostMapping ("/getUseSpace")
     @Global_interceptor(checkparams = true,checkLogin = true)
     public ResponseVo<UserSpace> getUseSpace(HttpSession session){
         UserSpace userSpace=redisComponent.getUserSpaceUser(getUserInfofromSession(session).getUserId());
-        //  wenzhuo TODO 2024/3/30 : json大小写不正确
         return new ResponseVo<UserSpace>("success",200,"成功！！！",userSpace);
     }
 

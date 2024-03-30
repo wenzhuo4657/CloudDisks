@@ -1,4 +1,4 @@
-package cn.wenzhuo4657.controller;
+package cn.wenzhuo4657.controller.support;
 
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.dto.SessionDto;

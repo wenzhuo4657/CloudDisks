@@ -99,10 +99,9 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         File tempFile = null;
         try {
             if (StringUtil.isEmpty(fileId)) {
-
-                fileId = "3";
+                fileId = StringUtil.getRandom_Number(HttpeCode.code_length);
             }
-            resultDto.setFileid(fileId);
+            resultDto.setFileId(fileId);
             Date curtime = new Date();
             UserSpace userSpace = redisComponent.getUserSpaceUser(sessionDto.getUserId());
 
@@ -121,7 +120,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
                 if (!dbFileList.isEmpty()) {
 
                     FileInfo doFile = dbFileList.get(0);
-                    if (doFile.getFileSize() + userSpace.getUsespace() > userSpace.getTotalSpace()) {
+                    if (doFile.getFileSize() + userSpace.getUseSpace() > userSpace.getTotalSpace()) {
                         throw new SystemException(ResponseEnum.CODE_904);
                     }
                     doFile.setFileId(fileId);
@@ -154,7 +153,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
 
 //            临时存储目录
             String tempfolder = appconfig.getProjectFolder() + HttpeCode.Tempfolder_UploadFile;
-            //  wenzhuo TODO 2024/3/28 :待修改：由于不知为何每次前段传来的fileid都是“”，虽然相应体中返回1了对应的fileid，导致这里的缓存目录只能写死
+
             String curtempName = sessionDto.getUserId() + HttpeCode.tempFile + fileId;
             tempFile = new File(tempfolder + "/" + curtempName);
             if (!tempFile.exists()) {
@@ -243,7 +242,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         }
         //同步到redis中
         UserSpace space = redisComponent.getUserSpaceUser(sessionDto.getUserId());
-        space.setUsespace(space.getUsespace() + fileSize);
+        space.setUseSpace(space.getUseSpace() + fileSize);
         redisComponent.saveUserid_space(sessionDto.getUserId(), space);
 
     }
@@ -311,13 +310,14 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
             fileTypeEnums=FileTypeEnums.getFileTypeBySuffix(suffix);
 
             if (fileTypeEnums==FileTypeEnums.VIDEO){
-                //  wenzhuo TODO 2024/3/30 : ffmtp视频切片
                 cutFileType_Video(fileId,targetFilePath);
-                cover=targetFolderName+"/"+month+"/"+curtempName+HttpeCode.video+HttpeCode.img_png;
-                ScaleFilter.createCover4Video(new File(targetFilePath), HttpeCode.LENGTH_150, new File(cover));
+                cover=month+"/"+curtempName+HttpeCode.video+HttpeCode.img_png;
+                String coverpath=targetFolderName+"/"+cover;
+                ScaleFilter.createCover4Video(new File(targetFilePath), HttpeCode.LENGTH_150, new File(coverpath));
             }else if (FileTypeEnums.IMAGE==fileTypeEnums){
-                cover = targetFolderName+"/"+month + "/" + realFileName.replace(".", "_.");
-                Boolean created = ScaleFilter.createThumbnailWidthFFmpeg(new File(targetFilePath), HttpeCode.LENGTH_150, new File(cover), false);
+                cover=month + "/" + realFileName.replace(".", "_.");
+                String coverpath = targetFolderName+"/"+cover;
+                Boolean created = ScaleFilter.createThumbnailWidthFFmpeg(new File(targetFilePath), HttpeCode.LENGTH_150, new File(coverpath), false);
                 if (!created){
                     FileUtils.copyFile(new File(targetFilePath), new File(cover));
                 }

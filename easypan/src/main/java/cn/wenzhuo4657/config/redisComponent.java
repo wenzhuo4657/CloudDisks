@@ -33,7 +33,7 @@ public class redisComponent {
         UserSpace space=(UserSpace)  redisConfig.getCacheObject(HttpeCode.redis_userid_space+userId);
         if (null==space){
             space=new UserSpace();
-            space.setUsespace(1L);
+            space.setUseSpace(1L);
             space.setTotalSpace(getSenderDtodefault().getUserInitUserSpace()*HttpeCode.MB);
             saveUserid_space(userId,space);
         }

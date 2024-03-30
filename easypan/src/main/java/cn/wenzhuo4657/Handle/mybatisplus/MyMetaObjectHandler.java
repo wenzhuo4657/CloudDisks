@@ -14,6 +14,7 @@ import java.util.Date;
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
 
+    //  wenzhuo TODO 2024/3/30 : 自动填充未生效
     @Override
     //只要对数据库执行了插入语句，那么就会执行到这个方法
     public void insertFill(MetaObject metaObject) {

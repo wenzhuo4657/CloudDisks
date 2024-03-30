@@ -14,16 +14,16 @@ import java.io.Serializable;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
-public class UploadResultDto implements Serializable {
-    private  String fileid;
+public class UploadResultDto {
+    private  String fileId;
     private  String status;
 
-    public String getFileid() {
-        return fileid;
+    public String getFileId() {
+        return fileId;
     }
 
-    public void setFileid(String fileid) {
-        this.fileid = fileid;
+    public void setFileId(String fileId) {
+        this.fileId = fileId;
     }
 
     public String getStatus() {
@@ -33,6 +33,7 @@ public class UploadResultDto implements Serializable {
     public void setStatus(String status) {
         this.status = status;
     }
+
 
 
 }

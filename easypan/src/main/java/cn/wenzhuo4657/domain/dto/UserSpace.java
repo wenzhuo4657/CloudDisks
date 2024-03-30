@@ -1,6 +1,7 @@
 package cn.wenzhuo4657.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,18 +14,19 @@ import java.io.Serializable;
  * @description:
  */
 
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserSpace implements Serializable{
+    @JSONField(name = "useSpace")
     private long useSpace;
     private  long totalSpace;
 
-    public long getUsespace() {
+
+    public long getUseSpace() {
         return useSpace;
     }
 
-    public void setUsespace(long usespace) {
-        this.useSpace = usespace;
+    public void setUseSpace(long useSpace) {
+        this.useSpace = useSpace;
     }
 
     public long getTotalSpace() {

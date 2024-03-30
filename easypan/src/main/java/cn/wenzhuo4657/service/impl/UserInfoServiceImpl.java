@@ -107,7 +107,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
             sessionDto.setAdmin(false);
         }
         UserSpace userSpace=new UserSpace();
-        userSpace.setUsespace(fileInfoMapper.selectAllByUserIdLong(sessionDto.getUserId()));
+        userSpace.setUseSpace(fileInfoMapper.selectAllByUserIdLong(sessionDto.getUserId()));
         userSpace.setTotalSpace(userInfo.getTotalSpace());
         redisComponent.saveUserid_space(userInfo.getUserId(),userSpace);
         return sessionDto;

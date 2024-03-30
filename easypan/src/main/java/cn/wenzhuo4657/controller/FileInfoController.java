@@ -2,27 +2,24 @@ package cn.wenzhuo4657.controller;
 
 import cn.wenzhuo4657.annotation.Global_interceptor;
 import cn.wenzhuo4657.annotation.VerifyParam;
+import cn.wenzhuo4657.controller.support.CommonFileSupport;
+import cn.wenzhuo4657.controller.support.ControllerSupport;
 import cn.wenzhuo4657.domain.ResponseVo;
 import cn.wenzhuo4657.domain.dto.FileInfoDto;
 import cn.wenzhuo4657.domain.dto.PaginationResultDto;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.dto.UploadResultDto;
-import cn.wenzhuo4657.domain.entity.FileInfo;
 import cn.wenzhuo4657.domain.enums.FileCategoryEnums;
 import cn.wenzhuo4657.domain.enums.FileDefalgEnums;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.query.FileInfoQuery;
 import cn.wenzhuo4657.service.FileInfoService;
-import cn.wenzhuo4657.utils.BeancopyUtils;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.File;
 import java.util.Optional;
 
 /**
@@ -33,7 +30,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/file")
-public class FileInfoController extends  ControllerSupport{
+public class FileInfoController extends CommonFileSupport {
 
     @Resource
     private FileInfoService fileInfoService;
@@ -68,6 +65,13 @@ public class FileInfoController extends  ControllerSupport{
         UploadResultDto resultDto=fileInfoService.uploadFile(sessionDto,fileId,file,fileName,filePid,fileMd5,chunkIndex,chunks);
 
         return  ResponseVo.ok(resultDto);
+    }
+
+    @GetMapping(value = "/getImage/{imageFolder}/{imageName}")
+    public  void  getImage(HttpServletResponse response,
+                           @PathVariable(value = "imageFolder")String imageFloder,
+                           @PathVariable(value = "imageName") String imageName){
+        super.getImage(response,imageFloder,imageName);
     }
 }
 
