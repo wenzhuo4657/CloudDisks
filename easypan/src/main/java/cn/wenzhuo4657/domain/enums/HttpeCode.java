@@ -21,6 +21,9 @@ public enum HttpeCode {
     public  static  final  String redis_Mail_Key="redis_Mail_Key";
     public static final int Email_Length=15;
     public static final long MB =1024*1024;
+    public static final Object TS_NAME ="index.ts" ;
+    public static final String M3U8_NAME = "index.m3u8";
+
 
     public static Integer userId_length=10;
     public static Integer email_status_No=0;
@@ -36,6 +39,10 @@ public enum HttpeCode {
     public static String tempFile="tempFile";
     public static String File_userid="File_userid";
     public static String UPLOAD_IO_CLOSE_FAIL="关闭流失败";
+    public static String cmd_order="cmd命令执行失败，工具类ProcessUtils ";
+    public static int LENGTH_150=150;
+    public static String video="VIDEO";
+    public static String img_png=".png";;
 
     int code;
     String msg;

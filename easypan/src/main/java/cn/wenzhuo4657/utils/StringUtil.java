@@ -63,6 +63,13 @@ public class StringUtil {
         return  fileNameReal+"_"+getRandom_Number(HttpeCode.code_length)+suffix;
     }
 
+    /**
+    * @Author wenzhuo4657
+    * @Description  返回文件后缀
+    * @Date 10:47 2024-03-30
+    * @Param [filename]
+    * @return java.lang.String
+    **/
     public static String getFileSuffix(String filename) {
         Integer index=filename.lastIndexOf(".");
         if (index==-1){
@@ -73,6 +80,14 @@ public class StringUtil {
 
     }
 
+
+    /**
+    * @Author wenzhuo4657
+    * @Description 返回文件前缀
+    * @Date 10:47 2024-03-30
+    * @Param [filename]
+    * @return java.lang.String
+    **/
 
   public static String getFileName_Suffix(String filename) {
         Integer index=filename.lastIndexOf(".");

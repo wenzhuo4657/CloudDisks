@@ -1,5 +1,6 @@
 package cn.wenzhuo4657.domain;
 
+import cn.wenzhuo4657.domain.dto.UserSpace;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,8 @@ public class ResponseVo<T> {
         return  r;
     }
 
+
+
     public static ResponseVo error(String info){
         ResponseVo r=new ResponseVo<>();
         r.setCode(500);
@@ -41,15 +44,5 @@ public class ResponseVo<T> {
         r.setInfo(info);
         r.setData(data);
         return  r;
-    }
-
-    @Override
-    public String toString() {
-        return "ResponseVo{" +
-                "status='" + status + '\'' +
-                ", code=" + code +
-                ", info='" + info + '\'' +
-                ", data=" + data +
-                '}';
     }
 }

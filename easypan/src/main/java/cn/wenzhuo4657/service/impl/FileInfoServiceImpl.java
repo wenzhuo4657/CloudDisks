@@ -10,9 +10,7 @@ import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.mapper.FileInfoMapper;
 import cn.wenzhuo4657.mapper.UserInfoMapper;
 import cn.wenzhuo4657.service.FileInfoService;
-import cn.wenzhuo4657.utils.BeancopyUtils;
-import cn.wenzhuo4657.utils.DateUtil;
-import cn.wenzhuo4657.utils.StringUtil;
+import cn.wenzhuo4657.utils.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -102,7 +100,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         try {
             if (StringUtil.isEmpty(fileId)) {
 
-                fileId = "2";
+                fileId = "3";
             }
             resultDto.setFileid(fileId);
             Date curtime = new Date();
@@ -207,10 +205,6 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
                     }
             );
 
-
-            //  wenzhuo TODO 2024/3/29 : 缩略图功能待完善
-
-
             return resultDto;
         } catch (IOException e) {
             log.error("文件写入失败，file.transferTo(newFile);");
@@ -274,11 +268,23 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         return filename;
     }
 
+
+    /**
+    * @Author wenzhuo4657
+    * @Description 对分片文件进行转码合并，且设置缩略图
+     * 缩略图说明：
+     * 如果是图片，则将文件后缀"."替换为“._”生成图片作为缩略图，
+     * 如果是视频，生成切片（技术使用ffmtp），并设置缩略图
+    * @Date 10:43 2024-03-30
+    * @Param [fileId, sessionDto]
+    * @return void
+    **/
     @Override
     public void transferFile(String fileId, SessionDto sessionDto) {
         Boolean transferSuccess = true;//转码结果状态
         String targetFilePath = null;//合并文件路径
         FileTypeEnums fileTypeEnums = null;//文件类型
+        String cover=null;//缩略图地址
         try {
             FileInfo fileInfo = fileInfoMapper.selectByFileidAndUserid(fileId, sessionDto.getUserId());
 
@@ -301,7 +307,30 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
             targetFilePath = targetFolder.getPath() + "/" + realFileName;
 
             union(tempFile.getPath(), targetFilePath, fileInfo.getFileName(), true);
+            FileTypeEnums.getFileTypeBySuffix(suffix);
+            fileTypeEnums=FileTypeEnums.getFileTypeBySuffix(suffix);
 
+            if (fileTypeEnums==FileTypeEnums.VIDEO){
+                //  wenzhuo TODO 2024/3/30 : ffmtp视频切片
+                cutFileType_Video(fileId,targetFilePath);
+                cover=targetFolderName+"/"+month+"/"+curtempName+HttpeCode.video+HttpeCode.img_png;
+                ScaleFilter.createCover4Video(new File(targetFilePath), HttpeCode.LENGTH_150, new File(cover));
+            }else if (FileTypeEnums.IMAGE==fileTypeEnums){
+                cover = targetFolderName+"/"+month + "/" + realFileName.replace(".", "_.");
+                Boolean created = ScaleFilter.createThumbnailWidthFFmpeg(new File(targetFilePath), HttpeCode.LENGTH_150, new File(cover), false);
+                if (!created){
+                    FileUtils.copyFile(new File(targetFilePath), new File(cover));
+                }
+            }
+
+
+            LambdaQueryWrapper<FileInfo> wrapper=new LambdaQueryWrapper<>();
+            wrapper.eq(FileInfo::getFileId,fileId);
+            FileInfo fileInfo1=new FileInfo();
+            fileInfo1.setFileSize(2222L);
+            fileInfo1.setFileCover(cover);
+            fileInfo1.setStatus(FileStatusEnums.USING.getStatus());
+            fileInfoMapper.update(fileInfo1,wrapper);
 
 
 
@@ -310,6 +339,21 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
             logger.error("{}",e);
             throw  new SystemException("分片合并失败");
         }
+    }
+
+    private void cutFileType_Video(String fileId, String targetFilePath) {
+        File tsFolder=new File(targetFilePath.substring(0,targetFilePath.lastIndexOf(".")));
+        if (!tsFolder.exists()){
+            tsFolder.mkdirs();
+        }
+        final String CMD_TRANSFER_2TS = "ffmpeg -y -i %s  -vcodec copy -acodec copy -vbsf h264_mp4toannexb %s";
+        final String CMD_CUT_TS = "ffmpeg -i %s -c copy -map 0 -f segment -segment_list %s -segment_time 30 %s/%s_%%4d.ts";
+        String tsPath = tsFolder + "/" + HttpeCode.TS_NAME;
+        String cmd = String.format(CMD_TRANSFER_2TS, targetFilePath, tsPath);
+        ProcessUtils.executeCommand(cmd, false);
+        cmd = String.format(CMD_CUT_TS, tsPath, tsFolder.getPath() + "/" + HttpeCode.M3U8_NAME, tsFolder.getPath(), fileId);
+        ProcessUtils.executeCommand(cmd, false);
+        new File(tsPath).delete();
     }
 
     /**
@@ -357,12 +401,6 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
                     readFile.close();
                 }
             }
-            LambdaQueryWrapper<FileInfo> wrapper=new LambdaQueryWrapper<>();
-            wrapper.eq(FileInfo::getFileId,"1");
-            FileInfo fileInfo=new FileInfo();
-            fileInfo.setFileSize(2222L);
-            fileInfo.setStatus(FileStatusEnums.USING.getStatus());
-            fileInfoMapper.update(fileInfo,wrapper);
         } catch (Exception e) {
             //合并文件失败
             logger.error("合并文件: {}失败{}", fileName, e);

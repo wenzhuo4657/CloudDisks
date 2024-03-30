@@ -1,6 +1,7 @@
 package cn.wenzhuo4657.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.Data;
 
 import java.io.Serializable;
 
@@ -12,7 +13,9 @@ import java.io.Serializable;
  * @description:
  */
 
-public class UserSpace {
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class UserSpace implements Serializable{
     private long useSpace;
     private  long totalSpace;
 
@@ -33,11 +36,4 @@ public class UserSpace {
     }
 
 
-    @Override
-    public String toString() {
-        return "UserSpace{" +
-                "useSpace=" + useSpace +
-                ", totalSpace=" + totalSpace +
-                '}';
-    }
 }

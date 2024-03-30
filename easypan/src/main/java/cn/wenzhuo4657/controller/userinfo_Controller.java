@@ -185,9 +185,10 @@ public class userinfo_Controller extends  ControllerSupport{
 
     @PostMapping ("/getUseSpace")
     @Global_interceptor(checkparams = true,checkLogin = true)
-    public ResponseVo getUseSpace(HttpSession session){
+    public ResponseVo<UserSpace> getUseSpace(HttpSession session){
         UserSpace userSpace=redisComponent.getUserSpaceUser(getUserInfofromSession(session).getUserId());
-        return ResponseVo.ok(userSpace);
+        //  wenzhuo TODO 2024/3/30 : json大小写不正确
+        return new ResponseVo<UserSpace>("success",200,"成功！！！",userSpace);
     }
 
     @PostMapping("/logout")
