@@ -5,7 +5,6 @@
     <sql id="fileInfo_param">
         file_id,user_id,file_md5,file_pid,file_size,file_name,file_cover,file_path,create_time,last_update_time,folder_type,file_category,file_type,status,del_flag,remove_time
     </sql>
-    <!--            //  wenzhuo TODO 2024/3/26 : 在此处不使用CDATA标签会出现什么问题？ -->
 <!--    判断sql的自动拼接，-->
     <sql id="sql_auto">
         <if test="fileId != null and fileId!=''">and file_id = #{fileId}</if>

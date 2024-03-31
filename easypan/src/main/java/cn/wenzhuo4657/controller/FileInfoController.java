@@ -9,11 +9,13 @@ import cn.wenzhuo4657.domain.dto.FileInfoDto;
 import cn.wenzhuo4657.domain.dto.PaginationResultDto;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.dto.UploadResultDto;
+import cn.wenzhuo4657.domain.entity.FileInfo;
 import cn.wenzhuo4657.domain.enums.FileCategoryEnums;
 import cn.wenzhuo4657.domain.enums.FileDefalgEnums;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.query.FileInfoQuery;
 import cn.wenzhuo4657.service.FileInfoService;
+import com.sun.deploy.net.HttpResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -73,5 +75,45 @@ public class FileInfoController extends CommonFileSupport {
                            @PathVariable(value = "imageName") String imageName){
         super.getImage(response,imageFloder,imageName);
     }
+
+/**
+* @Author wenzhuo4657
+* @Description  切片文件预览
+ * 视频预览：第一次接受的fileId为真实的数据库索引fileId，要求返回视频文件的index.m3u8索引文件，
+ * 其后前端根据索引文件依次发起请求得到视频切片，fileId为切片文件名称
+* @Date 19:03 2024-03-31
+* @Param [session, response, fileId]
+* @return void
+**/
+    @RequestMapping("ts/getVideoInfo/{fileId}")
+    @Global_interceptor
+    public  void  getVideoInfo(HttpSession session, HttpServletResponse response,@PathVariable("fileId") String fileId){
+        SessionDto sessionDto=getUserInfofromSession(session);
+        super.getVideoFile(response,sessionDto,fileId);
+    }
+
+
+    /**
+    * @Author wenzhuo4657
+    * @Description 预览文件为非切片文件，
+    * @Date 19:37 2024-03-31
+    * @Param [session, response, fileId]
+    * @return void
+    **/
+    @RequestMapping("getFile/{fileId}")
+    @Global_interceptor
+    public  void  getFile(HttpSession session, HttpServletResponse response,@PathVariable("fileId") String fileId){
+        SessionDto sessionDto=getUserInfofromSession(session);
+        super.getFile(response,sessionDto,fileId);
+    }
+
+    @PostMapping("newFoloder")
+    @Global_interceptor
+    public  ResponseVo newFoloder(HttpSession session,String filePid,String fileName){
+        FileInfo fileInfo = fileInfoService.newFolder(fileName, filePid, getUserInfofromSession(session));
+        return  ResponseVo.ok(fileInfo);
+    }
+
+
 }
 

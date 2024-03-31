@@ -24,4 +24,6 @@ public interface FileInfoService extends IService<FileInfo> {
     PaginationResultDto<FileInfoDto> findListBypage(FileInfoQuery query);
 
     UploadResultDto uploadFile(SessionDto sessionDto, String fileId, MultipartFile file, String filename, String filePid, String fileMd5, Integer chunkIndex, Integer chunks);
+
+    FileInfo newFolder(String fileName, String filePid, SessionDto userInfofromSession);
 }

@@ -30,6 +30,8 @@ import javax.annotation.Resource;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -130,8 +132,6 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
                     doFile.setLastUpdateTime(curtime);
                     doFile.setStatus(FileStatusEnums.USING.getStatus());
                     doFile.setDelFlag(FileDefalgEnums.USING.getStatus());
-                    doFile.setFileMd5(fileMd5);
-
                     filename = autoRename(filePid, sessionDto.getUserId(), filename);
                     doFile.setFileName(filename);
                     this.fileInfoMapper.insert(doFile);
@@ -327,7 +327,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
             LambdaQueryWrapper<FileInfo> wrapper=new LambdaQueryWrapper<>();
             wrapper.eq(FileInfo::getFileId,fileId);
             FileInfo fileInfo1=new FileInfo();
-            fileInfo1.setFileSize(2222L);
+            fileInfo1.setFileSize(Files.size(Paths.get(targetFilePath)));
             fileInfo1.setFileCover(cover);
             fileInfo1.setStatus(FileStatusEnums.USING.getStatus());
             fileInfoMapper.update(fileInfo1,wrapper);
@@ -425,5 +425,43 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
             }
         }
     }
+
+    @Override
+    public FileInfo newFolder(String fileName, String filePid, SessionDto userInfofromSession) {
+        checkName(fileName,filePid,userInfofromSession.getUserId());
+        FileInfo fileInfo=new FileInfo();
+        fileInfo.setFileId(StringUtil.getRandom_Number(HttpeCode.code_length_10));
+        fileInfo.setFileName(fileName);
+        fileInfo.setFilePid(filePid);
+        fileInfo.setUserId(userInfofromSession.getUserId());
+        fileInfo.setFolderType(FileFolderTypeEnums.FOLDER.getType());
+        Date date=new Date();
+        fileInfo.setCreateTime(date);
+        fileInfo.setLastUpdateTime(date);
+        fileInfo.setDelFlag(FileDefalgEnums.USING.getStatus());
+        fileInfo.setStatus(FileStatusEnums.USING.getStatus());
+        fileInfoMapper.insert(fileInfo);
+        return fileInfo;
+    }
+
+    /**
+    * @Author wenzhuo4657
+    * @Description 检查当前用户的同级目录有否有相同名称的文件夹或者文件，
+     * ps:由于此处文件后缀未做隐藏处理，所以不必区分文件夹和文件名称的校验
+    * @Date 20:04 2024-03-31
+    * @Param [fileName, filePid, userId]
+    * @return void
+    **/
+    private void checkName(String fileName, String filePid, String userId) {
+        FileInfoQuery fileInfoQuery=new FileInfoQuery();
+        fileInfoQuery.setFileName(fileName);
+        fileInfoQuery.setFileId(filePid);
+        fileInfoQuery.setUserId(userId);
+        int count=fileInfoMapper.selectCount(fileInfoQuery);
+        if (count>0){
+            throw  new SystemException("该名称已存在");
+        }
+    }
+
 
 }

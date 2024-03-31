@@ -43,6 +43,7 @@ public enum HttpeCode {
     public static int LENGTH_150=150;
     public static String video="VIDEO";
     public static String img_png=".png";;
+    public static Integer code_length_10=10;
 
     int code;
     String msg;
