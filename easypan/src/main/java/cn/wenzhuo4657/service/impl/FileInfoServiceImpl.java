@@ -12,14 +12,11 @@ import cn.wenzhuo4657.mapper.UserInfoMapper;
 import cn.wenzhuo4657.service.FileInfoService;
 import cn.wenzhuo4657.utils.*;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.metadata.OrderItem;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -32,9 +29,9 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 文件信息(FileInfo)表服务实现类
@@ -464,4 +461,130 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
     }
 
 
+
+    /**
+    * @Author wenzhuo4657
+    * @Description 对数据库中的文件/目录进行重命名
+    * @Date 18:44 2024-04-02
+    * @Param [fileId, fileName, userId]
+    * @return cn.wenzhuo4657.domain.entity.FileInfo
+    **/
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public FileInfo rename(String fileId, String fileName, String userId) {
+        FileInfo fileInfo=this.fileInfoMapper.selectByFileidAndUserid(fileId,userId);
+        if (fileInfo==null){
+            throw new SystemException("文件不存在");
+        }
+        String rename=fileName;
+        if (FileFolderTypeEnums.FILE.getType().equals(fileInfo.getFolderType())){
+            rename+=StringUtil.getFileSuffix(fileInfo.getFileName());
+        }
+        Date date=new Date();
+        FileInfo da=new FileInfo();
+        da.setLastUpdateTime(date);
+        da.setFileName(rename);
+        da.setFileId(fileId);
+        this.fileInfoMapper.updateById(da);
+        return da;
+    }
+
+    @Override
+    public void changeFileFolder(String fileIds, String filePid, String userId) {
+        String [] arr=fileIds.split(",");
+        if (fileIds.equals(filePid)){
+            throw  new SystemException(ResponseEnum.CODE_600);
+        }
+
+       FileInfo fileinfo_filePid=fileInfoMapper.selectByFileidAndUserid(filePid,userId);
+        if (Objects.isNull(fileinfo_filePid)
+                ||fileinfo_filePid.getFolderType()!=FileFolderTypeEnums.FOLDER.getType()
+                ||fileinfo_filePid.getDelFlag()!=FileDefalgEnums.USING.getStatus()){
+            throw  new SystemException(ResponseEnum.CODE_600);
+        }
+        FileInfoQuery fileInfoQuery=new FileInfoQuery();
+        fileInfoQuery.setFileIdArray(arr);
+        fileInfoQuery.setUserId(userId);
+        List<FileInfo> list=fileInfoMapper.findListByInfoQuery(fileInfoQuery);
+        if (list.size()==0){
+            logger.info("出现了一次无效的文件转移请求");
+            return;
+        }
+        Map<String ,FileInfo> map=list.stream().collect(Collectors.toMap(FileInfo::getFileName, Function.identity(),(da1,da2)->da2));
+        FileInfoQuery fileInfoQuery1=new FileInfoQuery();
+        fileInfoQuery1.setUserId(userId);
+        fileInfoQuery1.setFilePid(filePid);
+        List<FileInfo> fileInfos=fileInfoMapper.findListByInfoQuery(fileInfoQuery1);
+
+
+//        检查是否出现重命名
+        //  wenzhuo TODO 2024/4/2 : 这里遇到同名文件直接自动重命令，如果要写前端的话，这块需要改动将重命名交给用户
+
+        fileInfos.stream().forEach(o->{
+            if (map.containsKey(o.getFileName())){
+                FileInfo info=map.get(o.getFileName());
+                info.setFileName(StringUtil.getFileName_Suffix(info.getFileName())+"_"
+                        +StringUtil.getRandom_Number(HttpeCode.code_length)
+                        +StringUtil.getFileSuffix(info.getFileName())
+                );
+                map.remove(o.getFileName());
+                map.put(info.getFileName(),info);
+            }
+
+        });
+        Date date=new Date();
+        map.values().stream().forEach(
+                o->{
+                    o.setFilePid(filePid);
+                    o.setLastUpdateTime(date);
+                    fileInfoMapper.updateById(o);
+                }
+        );
+    }
+
+    @Override
+    public void removeFile(String userId, String fileIds) {
+        String[] fileArray=fileIds.split(",");
+        FileInfoQuery query=new FileInfoQuery();
+        query.setFileIdArray(fileArray);
+        query.setUserId(userId);
+        query.setDelFlag(FileDefalgEnums.USING.getStatus());
+        List<FileInfo> list=fileInfoMapper.findListByInfoQuery(query);
+        if (list.isEmpty()){
+            return;
+        }
+
+        List<String> delFolder=new ArrayList<>();//记录所有要删除的目录id
+        for (FileInfo info:list){
+            if (FileFolderTypeEnums.FOLDER.getType().equals(info.getFolderType()))
+                findsubdirectory(delFolder,userId,info.getFileId(),FileDefalgEnums.USING.getStatus());
+        }
+
+        if (!delFolder.isEmpty()){
+            FileInfo info=new FileInfo();
+            info.setDelFlag(FileDefalgEnums.DEL.getStatus());
+            fileInfoMapper.updateFileDelFlagBatch(info,userId,delFolder,null, FileDefalgEnums.USING.getStatus());
+//删除所有目录id下的文件/文件夹，且由于第一层文件夹没有他的父级id,所以没有删除掉第一层
+        }
+
+//        这里将fileid中删除的文件都设置为回收站，便于找回，
+        List<String> delFileid=Arrays.asList(fileArray);
+        FileInfo info=new FileInfo();
+        info.setRemoveTime(new Date());
+        info.setDelFlag(FileDefalgEnums.RECYCLE.getStatus());
+        fileInfoMapper.updateFileDelFlagBatch(info,userId,null,delFileid,FileDefalgEnums.USING.getStatus());
+    }
+
+    private void findsubdirectory(List<String> delFolder, String userId, String fileId, Integer Defalg) {
+        delFolder.add(fileId);
+        FileInfoQuery query=new FileInfoQuery();
+        query.setDelFlag(Defalg);
+        query.setUserId(userId);
+        query.setFilePid(fileId);
+        query.setFolderType(FileFolderTypeEnums.FOLDER.getType());
+        List<FileInfo> list=fileInfoMapper.findListByInfoQuery(query);
+        for(FileInfo info:list){
+            findsubdirectory(delFolder,userId,info.getFileId(),Defalg);
+        }
+    }
 }

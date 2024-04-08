@@ -36,4 +36,17 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
     List<FileInfo> findListByInfoQuery(FileInfoQuery infoQuery);
 
     FileInfo selectByFileidAndUserid(String fileId, String userId);
+
+/**
+* @Author wenzhuo4657
+* @Description  更新数据库信息，其中 filePidList, fileIdList,表示更新范围，
+* @Date 18:20 2024-04-08
+* @Param [fileInfo, userid, filePidList, fileIdList, oldDelFlag]
+* @return void
+**/
+    void updateFileDelFlagBatch(@Param("fileInfo") FileInfo fileInfo,
+                                @Param("userId") String userid,
+                                @Param("filePidList") List<String> filePidList,
+                                @Param("fileIdList") List<String> fileIdList,
+                                @Param("oldDelFlag") Integer oldDelFlag);
 }

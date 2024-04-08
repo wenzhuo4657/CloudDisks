@@ -26,4 +26,10 @@ public interface FileInfoService extends IService<FileInfo> {
     UploadResultDto uploadFile(SessionDto sessionDto, String fileId, MultipartFile file, String filename, String filePid, String fileMd5, Integer chunkIndex, Integer chunks);
 
     FileInfo newFolder(String fileName, String filePid, SessionDto userInfofromSession);
+
+    FileInfo rename(String fileId, String fileName, String userId);
+
+    void changeFileFolder(String fileIds, String filePid, String userId);
+
+    void removeFile(String userId, String fileIds);
 }

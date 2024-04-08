@@ -15,6 +15,7 @@ public enum HttpeCode {
     UPLOAD_MERGE_FILE_FAIL(511, "关闭流失败");
     public static final Integer email_statusOne=1;
     public static final Integer  code_length=5;
+    public static Integer code_length_50=50;
     public static final Integer Status_Ok=1;//状态码是通用的，所以这里不做区分
     public static final Integer Status_NO_Ok=0;
 
@@ -44,6 +45,11 @@ public enum HttpeCode {
     public static String video="VIDEO";
     public static String img_png=".png";;
     public static Integer code_length_10=10;
+    public static String Check_Type_0="0";
+    public static String Check_Type_1="1";
+    public static String redis_downloadDto="redis_downloadDto";
+    public static String LoadRecycleList_File_sort="remove_time";
+
 
     int code;
     String msg;

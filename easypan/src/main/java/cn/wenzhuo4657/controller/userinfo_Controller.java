@@ -47,9 +47,9 @@ public class userinfo_Controller extends ControllerSupport {
         String code = vcode.getCode();
 
         if (type == null || type == 0) {
-            session.setAttribute(HttpeCode.Check_NO_Ok, code);
+            session.setAttribute(HttpeCode.Check_Type_0, code);
         } else {
-            session.setAttribute(HttpeCode.Check_Ok, code);
+            session.setAttribute(HttpeCode.Check_Type_1, code);
         }
         vcode.write(response.getOutputStream());
     }

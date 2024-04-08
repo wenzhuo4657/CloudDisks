@@ -67,7 +67,8 @@
             <include refid="sql_auto"/>
         </where>
     </sql>
-    <sql id="query_condition"><where><include refid="sql_auto"/>
+    <sql id="query_condition">
+        <where><include refid="sql_auto"/>
             <if test="filePidFuzzy!= null  and filePidFuzzy!=''">and file_pid like concat('%', #{filePidFuzzy}, '%')</if>
             <if test="fileIdFuzzy!= null  and fileIdFuzzy!=''">and file_id like concat('%', #{fileIdFuzzy}, '%')</if>
             <if test="userIdFuzzy!= null  and userIdFuzzy!=''">and user_id like concat('%', #{userIdFuzzy}, '%')</if>
@@ -80,6 +81,63 @@
             <if test="lastUpdateTimeStart!= null and lastUpdateTimeStart!=''"><![CDATA[ and  last_update_time>=str_to_date(#{lastUpdateTimeStart}, '%Y-%m-%d') ]]></if>
             <if test="lastUpdateTimeEnd!= null and lastUpdateTimeEnd!=''"><![CDATA[ and  last_update_time< date_sub(str_to_date(#{lastUpdateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]></if></where>
     </sql>
+    <update id="updateFileDelFlagBatch">
+        update file_info
+        <set>
+            <if test="fileInfo.fileMd5 != null">
+                file_md5 = #{fileInfo.fileMd5},
+            </if>
+            <if test="fileInfo.filePid != null">
+                file_pid = #{fileInfo.filePid},
+            </if>
+            <if test="fileInfo.fileSize != null">
+                file_size = #{fileInfo.fileSize},
+            </if>
+            <if test="fileInfo.fileName != null">
+                file_name = #{fileInfo.fileName},
+            </if>
+            <if test="fileInfo.fileCover != null">
+                file_cover = #{fileInfo.fileCover},
+            </if>
+            <if test="fileInfo.filePath != null">
+                file_path = #{fileInfo.filePath},
+            </if>
+            <if test="fileInfo.createTime != null">
+                create_time = #{fileInfo.createTime},
+            </if>
+            <if test="fileInfo.lastUpdateTime != null">
+                last_update_time = #{fileInfo.lastUpdateTime},
+            </if>
+            <if test="fileInfo.folderType != null">
+                folder_type = #{fileInfo.folderType},
+            </if>
+            <if test="fileInfo.fileCategory != null">
+                file_category = #{fileInfo.fileCategory},
+            </if>
+            <if test="fileInfo.fileType != null">
+                file_type = #{fileInfo.fileType},
+            </if>
+            <if test="fileInfo.status != null">
+                status = #{fileInfo.status},
+            </if>
+            <if test="fileInfo.removeTime != null">
+                remove_time = #{fileInfo.removeTime},
+            </if>
+            <if test="fileInfo.delFlag != null">
+                del_flag = #{fileInfo.delFlag},
+            </if>
+        </set>
+        where user_id = #{userId}
+        <if test="filePidList!=null">
+            and file_pid in(<foreach collection="filePidList" separator="," item="item">#{item}</foreach>)
+        </if>
+        <if test="fileIdList!=null">
+            and file_id in(<foreach collection="fileIdList" separator="," item="item">#{item}</foreach>)
+        </if>
+        <if test="oldDelFlag!=null">
+            and del_flag = #{oldDelFlag}
+        </if>
+    </update>
 
     <select id="selectAllByUserIdLong" resultType="java.lang.Long">
         SELECT IFNULL(SUM(file_size),0)  FROM file_info where  user_id=#{id}

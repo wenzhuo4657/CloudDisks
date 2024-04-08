@@ -2,26 +2,27 @@ package cn.wenzhuo4657.controller;
 
 import cn.wenzhuo4657.annotation.Global_interceptor;
 import cn.wenzhuo4657.annotation.VerifyParam;
+import cn.wenzhuo4657.config.redisComponent;
 import cn.wenzhuo4657.controller.support.CommonFileSupport;
-import cn.wenzhuo4657.controller.support.ControllerSupport;
 import cn.wenzhuo4657.domain.ResponseVo;
-import cn.wenzhuo4657.domain.dto.FileInfoDto;
-import cn.wenzhuo4657.domain.dto.PaginationResultDto;
-import cn.wenzhuo4657.domain.dto.SessionDto;
-import cn.wenzhuo4657.domain.dto.UploadResultDto;
+import cn.wenzhuo4657.domain.dto.*;
 import cn.wenzhuo4657.domain.entity.FileInfo;
-import cn.wenzhuo4657.domain.enums.FileCategoryEnums;
-import cn.wenzhuo4657.domain.enums.FileDefalgEnums;
-import cn.wenzhuo4657.domain.enums.HttpeCode;
+import cn.wenzhuo4657.domain.enums.*;
 import cn.wenzhuo4657.domain.query.FileInfoQuery;
+import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.service.FileInfoService;
-import com.sun.deploy.net.HttpResponse;
+import cn.wenzhuo4657.utils.BeancopyUtils;
+import cn.wenzhuo4657.utils.StringUtil;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -113,6 +114,128 @@ public class FileInfoController extends CommonFileSupport {
         FileInfo fileInfo = fileInfoService.newFolder(fileName, filePid, getUserInfofromSession(session));
         return  ResponseVo.ok(fileInfo);
     }
+
+/**
+* @Author wenzhuo4657
+* @Description 返回目录信息，并按照上下级顺序
+* @Date 12:37 2024-04-02
+* @Param [session, path]
+* @return cn.wenzhuo4657.domain.ResponseVo
+**/
+    @PostMapping("getFolderInfo")
+    @Global_interceptor
+    public  ResponseVo getFolderInfo(HttpSession session,@VerifyParam(required = true) String path){
+        SessionDto sessionDto=getUserInfofromSession(session);
+        return  super.getFolderInfo(sessionDto,path);
+    }
+
+    @PostMapping("rename")
+    @Global_interceptor
+    public  ResponseVo rename(HttpSession session,
+                              @VerifyParam(required = true)String fileId,
+                              @VerifyParam(required = true)String fileName){
+        SessionDto sessionDto=getUserInfofromSession(session);
+        FileInfo fileInfo=fileInfoService.rename(fileId,fileName,sessionDto.getUserId());
+        return  ResponseVo.ok(BeancopyUtils.copyBean(fileInfo,FileInfoDto.class));
+    }
+
+/**
+* @Author wenzhuo4657
+* @Description 具体文件跳转逻辑有前端实现，这里仅实现对信息的传输
+* @Date 19:45 2024-04-02
+* @Param [session,
+ * filePid,父级id
+ * currentFileIds 查询id不能够返回这个id,]
+* @return cn.wenzhuo4657.domain.ResponseVo
+**/
+    @PostMapping("loadAllFolder")
+    @Global_interceptor
+    public  ResponseVo loadAllFolder(HttpSession session,
+                              @VerifyParam(required = true)String filePid,
+                              String currentFileIds){
+        SessionDto sessionDto=getUserInfofromSession(session);
+        FileInfoQuery infoQuery=new FileInfoQuery();
+        infoQuery.setUserId(sessionDto.getUserId());
+        infoQuery.setFilePid(filePid);
+        infoQuery.setFolderType(FileFolderTypeEnums.FOLDER.getType());
+        if (!StringUtil.isEmpty(currentFileIds)){
+            infoQuery.setExcludeFileIdArray(currentFileIds.split(","));
+        }
+        infoQuery.setDelFlag(FileDefalgEnums.USING.getStatus());
+        infoQuery.setOrderBy("create_time desc");
+        PaginationResultDto<FileInfoDto> infoList=fileInfoService.findListBypage(infoQuery);
+        return  ResponseVo.ok(BeancopyUtils.copyBeanList(infoList.getList(), FileInfoDto.class));
+    }
+
+
+    /**
+    * @Author wenzhuo4657
+    * @Description
+    * @Date 20:13 2024-04-02
+    * @Param [session
+     * , fileIds:將要移动位置的文件
+     * , filePid：目标文件件的id
+     * ]
+    * @return cn.wenzhuo4657.domain.ResponseVo
+    **/
+    @PostMapping("changeFileFolder")
+    @Global_interceptor
+    public  ResponseVo changeFileFolder(HttpSession session,
+                              @VerifyParam(required = true)String fileIds,
+                              @VerifyParam(required = true)String filePid){
+        SessionDto sessionDto=getUserInfofromSession(session);
+        fileInfoService.changeFileFolder(fileIds,filePid,sessionDto.getUserId());
+        return  ResponseVo.ok();
+    }
+
+
+
+    @PostMapping("createDownloadUrl/{fileId}")
+    @Global_interceptor(checkLogin = false)
+    public  ResponseVo createDownloadUrl(HttpSession session,@PathVariable(value = "fileId") String fileId){
+        SessionDto sessionDto=getUserInfofromSession(session);
+        return  super.createDownloadUrl(fileId,sessionDto.getUserId());
+
+    }
+
+
+
+    @Resource
+    private redisComponent redisComponent;
+    @Resource
+    private  appconfig appconfig;
+    @GetMapping("download/{code}")
+    @Global_interceptor(checkLogin = false)
+    public  void  download(HttpServletRequest request,HttpServletResponse response,@PathVariable(value = "code") String code ) throws UnsupportedEncodingException {
+        DownloadFileDto dto=redisComponent.getDownloadCode(code);
+        if (Objects.isNull(dto)){
+            throw  new SystemException(ResponseEnum.CODE_600);
+        }
+        String filePath= appconfig.getProjectFolder()
+                + "/"+HttpeCode.File_userid
+                +"/"+dto.getFilePath();
+        String fileName=dto.getFileName();
+        response.setContentType("application/x-msdownload; charset=UTF-8");
+        if (request.getHeader("User-Agent").toLowerCase().indexOf("msie") > 0) {
+            fileName = URLEncoder.encode(fileName, "UTF-8");
+        } else {
+            fileName = new String(fileName.getBytes("UTF-8"), "ISO8859-1");
+        }
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+        readFile(response, filePath);
+    }
+
+
+    @PostMapping("delFile")
+    @Global_interceptor
+    public  ResponseVo delFile(HttpSession session,String fileIds){
+        SessionDto sessionDto=getUserInfofromSession(session);
+        fileInfoService.removeFile(sessionDto.getUserId(),fileIds);
+        return  ResponseVo.ok();
+
+    }
+
+
 
 
 }

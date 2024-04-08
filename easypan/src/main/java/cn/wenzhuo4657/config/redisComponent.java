@@ -1,5 +1,6 @@
 package cn.wenzhuo4657.config;
 
+import cn.wenzhuo4657.domain.dto.DownloadFileDto;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.dto.SenderDtoDefault;
 import cn.wenzhuo4657.domain.dto.UserSpace;
@@ -92,4 +93,11 @@ public class redisComponent {
         return  -1L;
     }
 
+    public void saveDownloadCode(String code, DownloadFileDto dto) {
+        redisConfig.setCacheObject(HttpeCode.redis_downloadDto+code,dto);
+    }
+
+    public DownloadFileDto getDownloadCode(String code){
+        return  (DownloadFileDto) redisConfig.getCacheObject(HttpeCode.redis_downloadDto+code);
+    }
 }
