@@ -1,10 +1,12 @@
 package cn.wenzhuo4657.config;
 
 import cn.wenzhuo4657.domain.dto.DownloadFileDto;
+import cn.wenzhuo4657.domain.entity.UserInfo;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.dto.SenderDtoDefault;
 import cn.wenzhuo4657.domain.dto.UserSpace;
 import cn.wenzhuo4657.mapper.FileInfoMapper;
+import cn.wenzhuo4657.mapper.UserInfoMapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -102,5 +104,16 @@ public class redisComponent {
 
     public DownloadFileDto getDownloadCode(String code){
         return  (DownloadFileDto) redisConfig.getCacheObject(HttpeCode.redis_downloadDto+code);
+    }
+
+    @Resource
+    private UserInfoMapper userInfoMapper;
+
+    public void changeUserSpace(String userId) {
+        UserSpace space=new UserSpace();
+        UserInfo userInfo=userInfoMapper.selectById(userId);
+        space.setUseSpace(userInfo.getUseSpace());
+        space.setTotalSpace(userInfo.getTotalSpace());
+        redisConfig.setCacheObject(HttpeCode.redis_userid_space+userId,space);
     }
 }

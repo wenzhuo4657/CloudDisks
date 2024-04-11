@@ -55,6 +55,16 @@ public class FileInfo {
     //进入回收站的时间
     private Date removeTime;
 
+    private  String nickName;
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
     public String getFileId() {
         return fileId;
     }

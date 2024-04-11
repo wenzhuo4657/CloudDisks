@@ -89,6 +89,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
     }
 
     private void sendEmail(String email, String code) {
+
         MimeMessage message=sender.createMimeMessage();
         MimeMessageHelper helper= null;
         try {
@@ -97,7 +98,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
             helper.setTo(email);
             SenderDtoDefault senderDtoDefault=redisComponent.getSenderDtodefault();
             helper.setSubject(senderDtoDefault.getRegisterEmailTitle());
-            helper.setText(String.format(senderDtoDefault.getRegisterEmailTitle(),code));
+            helper.setText(String.format(senderDtoDefault.getRegisterEmailContent(),code));
             helper.setSentDate(new Date());
             sender.send(message);
         } catch (MessagingException e) {

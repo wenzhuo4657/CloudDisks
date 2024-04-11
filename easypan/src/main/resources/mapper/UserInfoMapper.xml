@@ -116,7 +116,6 @@
                 use_space=use_space+#{fileSize}
             </if>
         </set>
-
         where
             user_id=#{userId}
         <if test="fileSize!=null">

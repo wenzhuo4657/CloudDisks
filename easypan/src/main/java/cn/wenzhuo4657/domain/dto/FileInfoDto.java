@@ -72,4 +72,7 @@ public class FileInfoDto implements Serializable {
      * 0:转码中 1转码失败 2:转码成功
      */
     private Integer status;
+
+    private String nickName;
+    private String userId;
 }

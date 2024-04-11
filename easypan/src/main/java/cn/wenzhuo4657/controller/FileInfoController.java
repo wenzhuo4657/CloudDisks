@@ -90,7 +90,7 @@ public class FileInfoController extends CommonFileSupport {
     @Global_interceptor
     public  void  getVideoInfo(HttpSession session, HttpServletResponse response,@PathVariable("fileId") String fileId){
         SessionDto sessionDto=getUserInfofromSession(session);
-        super.getVideoFile(response,sessionDto,fileId);
+        super.getVideoFile(response,sessionDto.getUserId(),fileId);
     }
 
 
@@ -105,7 +105,7 @@ public class FileInfoController extends CommonFileSupport {
     @Global_interceptor
     public  void  getFile(HttpSession session, HttpServletResponse response,@PathVariable("fileId") String fileId){
         SessionDto sessionDto=getUserInfofromSession(session);
-        super.getFile(response,sessionDto,fileId);
+        super.getFile(response,sessionDto.getUserId(),fileId);
     }
 
     @PostMapping("newFoloder")
@@ -232,7 +232,6 @@ public class FileInfoController extends CommonFileSupport {
         SessionDto sessionDto=getUserInfofromSession(session);
         fileInfoService.removeFile(sessionDto.getUserId(),fileIds);
         return  ResponseVo.ok();
-
     }
 
 

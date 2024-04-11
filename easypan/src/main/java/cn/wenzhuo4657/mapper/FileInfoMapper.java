@@ -56,4 +56,6 @@ public interface FileInfoMapper extends BaseMapper<FileInfo> {
                                 @Param("filePidList") List<String> filePidList,
                                 @Param("fileIdList") List<String> fileIdList,
                                 @Param("oldDelFlag") Integer oldDelFlag);
+
+    void deleteByUseId(String userId);
 }

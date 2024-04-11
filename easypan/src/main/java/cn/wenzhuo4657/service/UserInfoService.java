@@ -23,4 +23,8 @@ public interface UserInfoService extends IService<UserInfo> {
     void resetPwd(String email, String password, String emailCode);
 
     PaginationResultDto findListByPage(UserInfoQuery query);
+
+    void updateStatusByID(String userId, Integer status);
+
+    void changeSpace(String userId, Integer changeSpace);
 }

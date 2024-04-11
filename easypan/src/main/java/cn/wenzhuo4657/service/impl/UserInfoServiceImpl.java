@@ -5,6 +5,7 @@ import cn.wenzhuo4657.config.RedisCache;
 import cn.wenzhuo4657.domain.dto.*;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.enums.PageSize;
+import cn.wenzhuo4657.domain.enums.UserStatusEnum;
 import cn.wenzhuo4657.domain.enums.appconfig;
 import cn.wenzhuo4657.domain.entity.UserInfo;
 import cn.wenzhuo4657.domain.query.SimplePage;
@@ -148,5 +149,29 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         PaginationResultDto<UserInfoVo> resultDto =
                 new PaginationResultDto<>(count, IF.getPageSize(), IF.getPageNo(), IF.getPageTotal(), list);
         return resultDto;
+    }
+
+    @Override
+    public void updateStatusByID(String userId, Integer status) {
+        UserInfo userInfo=new UserInfo();
+        userInfo.setStatus(status);
+        if (UserStatusEnum.disable.getStatus().equals(status)){
+            userInfo.setUseSpace(0L);
+            fileInfoMapper.deleteByUseId(userId);
+        }
+        userInfo.setUserId(userId);
+        mapper.updateById(userInfo);
+    }
+
+
+    @Override
+    public void changeSpace(String userId, Integer changeSpace) {
+        long space=changeSpace*HttpeCode.MB;
+        UserInfo userInfo=new UserInfo();
+        userInfo.setTotalSpace(space);
+        userInfo.setUserId(userId);
+        mapper.updateById(userInfo);
+        redisComponent.changeUserSpace(userId);
+
     }
 }

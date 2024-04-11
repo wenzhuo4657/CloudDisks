@@ -68,7 +68,7 @@ public class CommonFileSupport extends  ControllerSupport{
 * @Param [response, sessionDto, fileId]
 * @return void
 **/
-    protected void getVideoFile(HttpServletResponse response, SessionDto sessionDto, String fileId) {
+    protected void getVideoFile(HttpServletResponse response, String userId, String fileId) {
         //  wenzhuo TODO 2024/4/8 : md5相同的两个文件一个位于回收站，一个位于正常的网盘路径上时，无法打开视频预览
         if (StringUtil.isEmpty(fileId)){
             return;
@@ -76,7 +76,7 @@ public class CommonFileSupport extends  ControllerSupport{
         if (fileId.endsWith(".ts")){
 //            切片文件上传
             String realFileId=fileId.split("_")[0];
-            FileInfo fileInfo=fileInfoMapper.selectByFileidAndUserid(realFileId,sessionDto.getUserId());
+            FileInfo fileInfo=fileInfoMapper.selectByFileidAndUserid(realFileId,userId);
             if (Objects.isNull(fileInfo)||fileInfo.getFileType()!= FileTypeEnums.VIDEO.getType()){
                 return;
             }
@@ -84,7 +84,7 @@ public class CommonFileSupport extends  ControllerSupport{
             String path= appconfig.getProjectFolder()
                     +"/"+HttpeCode.File_userid
                     +"/"+moth
-                    +"/"+sessionDto.getUserId()+HttpeCode.tempFile+realFileId
+                    +"/"+userId+HttpeCode.tempFile+realFileId
                     +"/"+fileId;
             File file=new File(path);
             if (!file.exists()){
@@ -94,7 +94,7 @@ public class CommonFileSupport extends  ControllerSupport{
 
         }else {
 //            切片文件
-            FileInfo fileInfo=fileInfoMapper.selectByFileidAndUserid(fileId,sessionDto.getUserId());
+            FileInfo fileInfo=fileInfoMapper.selectByFileidAndUserid(fileId,userId);
             if (Objects.isNull(fileInfo)||fileInfo.getFileType()!= FileTypeEnums.VIDEO.getType()){
                 return;
             }
@@ -104,7 +104,7 @@ public class CommonFileSupport extends  ControllerSupport{
                 path= appconfig.getProjectFolder()
                         +"/"+HttpeCode.File_userid
                         +"/"+moth
-                        +"/"+sessionDto.getUserId()+HttpeCode.tempFile+fileId
+                        +"/"+userId+HttpeCode.tempFile+fileId
                         +"/"+HttpeCode.M3U8_NAME;
             File file=new File(path);
             if (!file.exists()){
@@ -115,11 +115,11 @@ public class CommonFileSupport extends  ControllerSupport{
 
     }
 
-    protected void getFile(HttpServletResponse response, SessionDto sessionDto, String fileId) {
+    protected void getFile(HttpServletResponse response, String userId, String fileId) {
         if (StringUtil.isEmpty(fileId)){
             return;
         }
-            FileInfo fileInfo=fileInfoMapper.selectByFileidAndUserid(fileId,sessionDto.getUserId());
+            FileInfo fileInfo=fileInfoMapper.selectByFileidAndUserid(fileId,userId);
             if (Objects.isNull(fileInfo)){
                 return;
             }
@@ -143,11 +143,13 @@ public class CommonFileSupport extends  ControllerSupport{
         **/
     protected ResponseVo getFolderInfo(SessionDto sessionDto, String path) {
         String [] array=path.split("/");
-        String userId=sessionDto.getUserId();
         FileInfoQuery fileInfoQuery=new FileInfoQuery();
         fileInfoQuery.setFileIdArray(array);
         fileInfoQuery.setFolderType(FileFolderTypeEnums.FOLDER.getType());
-        fileInfoQuery.setUserId(userId);
+        if (!Objects.isNull(sessionDto)){
+            String userId=sessionDto.getUserId();
+            fileInfoQuery.setUserId(userId);
+        }
         String OrderBy="field(file_id,\'"+ StringUtils.join(array,"\',\'") +"\')";
         fileInfoQuery.setOrderBy(OrderBy);
         List<FileInfo> list=fileInfoMapper.findListByInfoQuery(fileInfoQuery);

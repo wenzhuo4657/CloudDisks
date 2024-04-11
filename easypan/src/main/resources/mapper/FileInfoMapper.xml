@@ -150,13 +150,21 @@
             and del_flag = #{oldDelFlag}
         </if>
     </delete>
+    <delete id="deleteByUseId">
+        delete
+        from file_info
+        where user_id=#{userId}
+    </delete>
 
     <select id="selectAllByUserIdLong" resultType="java.lang.Long">
         SELECT IFNULL(SUM(file_size),0)  FROM file_info where  user_id=#{id}
     </select>
     <select id="findListByInfoQuery" resultType="cn.wenzhuo4657.domain.entity.FileInfo">
         SELECT <include refid="fileInfo_param"/>
-            FROM file_info
+            <if test="queryNickName!=null and queryNickName">
+            ,(select user_name from user_info u where u.user_id=f.user_id) nickName
+            </if>
+            FROM file_info f
         <include refid="query_condition"/>
         <if test="orderBy!=null">order by ${orderBy}</if>
         <if test="simplePage!=null">limit #{simplePage.start},#{simplePage.end}</if>
