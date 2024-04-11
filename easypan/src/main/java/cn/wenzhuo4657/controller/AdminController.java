@@ -105,7 +105,6 @@ public class AdminController extends CommonFileSupport {
     public ResponseVo getFolderInfo(String path){
         return  super.getFolderInfo(null,path);
     }
-//  wenzhuo TODO 2024/4/11 : 以下四个接口，前端返回的userId都是undefined,
 
     @RequestMapping("getFile/{userId}/{fileId}")
     @Global_interceptor(checkparams = true,checkAdmin = true)
