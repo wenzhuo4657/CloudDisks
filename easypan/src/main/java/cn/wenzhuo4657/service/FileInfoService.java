@@ -32,4 +32,8 @@ public interface FileInfoService extends IService<FileInfo> {
     void changeFileFolder(String fileIds, String filePid, String userId);
 
     void removeFile(String userId, String fileIds);
+
+    void recoverFileBatch(String userId, String fileIds);
+
+    void delFileBatch(String userId, String fileIds, boolean admin);
 }

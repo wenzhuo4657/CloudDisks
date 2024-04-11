@@ -1,18 +1,126 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="cn.wenzhuo4657.mapper.UserInfoMapper">
+
+
+    <!--实体映射-->
+    <resultMap id="base_result_map" type="cn.wenzhuo4657.domain.entity.UserInfo" >
+        <!--用户ID-->
+        <result column="user_id" property="userId"/>
+        <!--昵称-->
+        <result column="user_name" property="userName"/>
+        <!--邮箱-->
+        <result column="email" property="email"/>
+        <!--qqOpenID-->
+        <result column="qq_open_id" property="qqOpenId"/>
+        <!--qq头像-->
+        <result column="qq_avatar" property="qqAvatar"/>
+        <!--密码-->
+        <result column="password" property="password"/>
+        <!--加入时间-->
+        <result column="creat_time" property="creatTime"/>
+        <!--最后登录时间-->
+        <result column="update_time" property="updateTime"/>
+        <!--0:禁用 1:正常-->
+        <result column="status" property="status"/>
+        <!--使用空间单位byte-->
+        <result column="use_space" property="useSpace"/>
+        <!--总空间-->
+        <result column="total_space" property="totalSpace"/>
+    </resultMap>
+
+    <sql id="base_condition_filed">
+        <if test="userId != null and userId!=''">
+            and user_id = #{userId}
+        </if>
+        <if test="userName != null and userName!=''">
+            and user_name = #{userName}
+        </if>
+        <if test="email != null and email!=''">
+            and email = #{email}
+        </if>
+        <if test="qqOpenId != null and qqOpenId!=''">
+            and qq_open_id = #{qqOpenId}
+        </if>
+        <if test="qqAvatar != null and qqAvatar!=''">
+            and qq_avatar = #{qqAvatar}
+        </if>
+        <if test="password != null and password!=''">
+            and password = #{password}
+        </if>
+        <if test="creatTime != null and creatTime!=''">
+            <![CDATA[ and  creat_time=str_to_date(#{joinTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="updateTime != null and updateTime!=''">
+            <![CDATA[ and  update_time=str_to_date(#{lastLoginTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="status != null">
+            and status = #{status}
+        </if>
+        <if test="useSpace != null">
+            and use_space = #{useSpace}
+        </if>
+        <if test="totalSpace != null">
+            and total_space = #{totalSpace}
+        </if>
+    </sql>
+    <!-- 通用查询条件列-->
+    <sql id="query_condition">
+        <where>
+            <include refid="base_condition_filed"/>
+            <if test="userIdFuzzy!= null  and userIdFuzzy!=''">
+                and user_id like concat('%', #{userIdFuzzy}, '%')
+            </if>
+            <if test="nickNameFuzzy!= null  and nickNameFuzzy!=''">
+                and user_name like concat('%', #{nickNameFuzzy}, '%')
+            </if>
+            <if test="emailFuzzy!= null  and emailFuzzy!=''">
+                and email like concat('%', #{emailFuzzy}, '%')
+            </if>
+            <if test="qqOpenIdFuzzy!= null  and qqOpenIdFuzzy!=''">
+                and qq_open_id like concat('%', #{qqOpenIdFuzzy}, '%')
+            </if>
+            <if test="qqAvatarFuzzy!= null  and qqAvatarFuzzy!=''">
+                and qq_avatar like concat('%', #{qqAvatarFuzzy}, '%')
+            </if>
+            <if test="passwordFuzzy!= null  and passwordFuzzy!=''">
+                and password like concat('%', #{passwordFuzzy}, '%')
+            </if>
+            <if test="joinTimeStart!= null and joinTimeStart!=''">
+                <![CDATA[ and  creat_time>=str_to_date(#{joinTimeStart}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="joinTimeEnd!= null and joinTimeEnd!=''">
+                <![CDATA[ and  creat_time< date_sub(str_to_date(#{joinTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+            </if>
+            <if test="lastLoginTimeStart!= null and lastLoginTimeStart!=''">
+                <![CDATA[ and  update_time>=str_to_date(#{lastLoginTimeStart}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="lastLoginTimeEnd!= null and lastLoginTimeEnd!=''">
+                <![CDATA[ and  update_time< date_sub(str_to_date(#{lastLoginTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+            </if>
+        </where>
+    </sql>
+
+    <!-- 通用查询结果列-->
+    <sql id="base_column_list">
+        user_id,
+        user_name,email,qq_open_id,qq_avatar,
+		 password,creat_time,update_time,status,use_space,
+		 total_space
+    </sql>
+
     <update id="updateUserSpace">
         update  user_info
         <set>
             <if test="fileSize!=null">
-                user_space=user_space+#{fileSize}
+                use_space=use_space+#{fileSize}
             </if>
         </set>
 
         where
             user_id=#{userId}
         <if test="fileSize!=null">
-            and <![CDATA[ (user_space+#{fileSize})<= total_space ]]>
+            and <![CDATA[ (use_space+#{fileSize})<= total_space ]]>
         </if>
     </update>
     <select id="selectByNickName" resultType="cn.wenzhuo4657.domain.entity.UserInfo">
@@ -20,4 +128,16 @@
         from  user_info
         where  user_name=#{nickName}
     </select>
+    <select id="selectCount" resultType="java.lang.Integer">
+        select  count(*) from file_info
+        <include refid="query_condition"></include>
+    </select>
+    <select id="findListByInfoQuery" resultType="cn.wenzhuo4657.domain.entity.UserInfo">
+        SELECT <include refid="base_column_list"/>
+        FROM user_info
+        <include refid="query_condition"/>
+        <if test="orderBy!=null">order by ${orderBy}</if>
+        <if test="simplePage!=null">limit #{simplePage.start},#{simplePage.end}</if>
+    </select>
+
 </mapper>

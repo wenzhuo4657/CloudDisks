@@ -3,6 +3,7 @@ package cn.wenzhuo4657.service.impl;
 import cn.wenzhuo4657.config.redisComponent;
 import cn.wenzhuo4657.domain.dto.*;
 import cn.wenzhuo4657.domain.entity.FileInfo;
+import cn.wenzhuo4657.domain.entity.UserInfo;
 import cn.wenzhuo4657.domain.enums.*;
 import cn.wenzhuo4657.domain.query.FileInfoQuery;
 import cn.wenzhuo4657.domain.query.SimplePage;
@@ -543,6 +544,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void removeFile(String userId, String fileIds) {
         String[] fileArray=fileIds.split(",");
         FileInfoQuery query=new FileInfoQuery();
@@ -586,5 +588,81 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         for(FileInfo info:list){
             findsubdirectory(delFolder,userId,info.getFileId(),Defalg);
         }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void recoverFileBatch(String userId, String fileIds) {
+        String[]  fileArray=fileIds.split(",");
+        FileInfoQuery query=new FileInfoQuery();
+        query.setUserId(userId);
+        query.setFileIdArray(fileArray);
+        query.setDelFlag(FileDefalgEnums.RECYCLE.getStatus());
+        List<FileInfo> list=fileInfoMapper.findListByInfoQuery(query);
+        if (list.isEmpty()){
+            return;
+        }
+        List<String> delFolder=new ArrayList<>();//记录所有要恢复的目录id
+        for (FileInfo info:list){
+            if (FileFolderTypeEnums.FOLDER.getType().equals(info.getFolderType()))
+                findsubdirectory(delFolder,userId,info.getFileId(),FileDefalgEnums.DEL.getStatus());
+        }
+
+        if (!delFolder.isEmpty()){
+            FileInfo info=new FileInfo();
+            info.setDelFlag(FileDefalgEnums.USING.getStatus());
+            fileInfoMapper.updateFileDelFlagBatch(info,userId,delFolder,null, FileDefalgEnums.DEL.getStatus());
+        }
+
+
+        List<String> delFileid=Arrays.asList(fileArray);
+        FileInfo info=new FileInfo();
+        info.setRemoveTime(new Date());
+        info.setDelFlag(FileDefalgEnums.USING.getStatus());
+        fileInfoMapper.updateFileDelFlagBatch(info,userId,null,delFileid,FileDefalgEnums.RECYCLE.getStatus());
+    }
+/**
+* @Author wenzhuo4657
+* @Description
+* @Date 14:41 2024-04-10
+* @Param [userId, fileIds,
+ * admin 表示删除用户是否为管理员，如果是则在删除时无需进行判断文件状态，可强制删除，如果不是则需要判断文件状态删除，该判断是指在sql拼接中
+ * ]
+* @return void
+**/
+    @Override
+    public void delFileBatch(String userId, String fileIds, boolean admin) {
+
+        String[]  fileArray=fileIds.split(",");
+        FileInfoQuery query=new FileInfoQuery();
+        query.setUserId(userId);
+        query.setFileIdArray(fileArray);
+        query.setDelFlag(FileDefalgEnums.RECYCLE.getStatus());
+        List<FileInfo> list=fileInfoMapper.findListByInfoQuery(query);
+        if (list.isEmpty()){
+            return;
+        }
+
+        List<String> delFolder=new ArrayList<>();//记录所有要彻底删除的目录id
+        for (FileInfo info:list){
+            if (FileFolderTypeEnums.FOLDER.getType().equals(info.getFolderType()))
+                findsubdirectory(delFolder,userId,info.getFileId(),FileDefalgEnums.DEL.getStatus());
+        }
+
+        if (!delFolder.isEmpty()){
+            fileInfoMapper.delFileDelFlagBatch(userId,delFolder,null,admin?null:FileDefalgEnums.DEL.getStatus());
+        }
+        fileInfoMapper.delFileDelFlagBatch(userId,null,Arrays.asList(fileArray),admin?null:FileDefalgEnums.RECYCLE.getStatus());
+
+        //数据库中更新用户空间
+        Long useSpace=fileInfoMapper.selectAllByUserIdLong(userId);
+        userInfoMapper.updateUserSpace(userId,useSpace);
+
+        //更新redis
+        UserSpace userSpace= redisComponent.getUserSpaceUser(userId);
+        userSpace.setUseSpace(useSpace);
+        redisComponent.saveUserid_space(userId,userSpace);
+
+
     }
 }

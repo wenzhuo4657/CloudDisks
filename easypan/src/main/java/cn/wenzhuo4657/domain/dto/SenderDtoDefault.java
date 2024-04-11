@@ -8,31 +8,49 @@ import java.io.Serializable;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SenderDtoDefault implements Serializable{
-    private  String Mail_Title="邮箱验证码";
-    private  String Mail_text="你好，你的邮箱验证码是：%s.15分钟有效";
-    private  Integer userInitUserSpace=5;
+    private  String registerEmailTitle="邮箱验证码";
+    private  String registerEmailContent="你好，你的邮箱验证码是：%s.15分钟有效";
+    private  String userInitUseSpace="5";
 
-    public String getMail_Title() {
-        return Mail_Title;
+    public SenderDtoDefault() {
     }
 
-    public void setMail_Title(String mail_Title) {
-        Mail_Title = mail_Title;
+    public SenderDtoDefault(String registerEmailTitle, String registerEmailContent, String userInitUserSpace) {
+        this.registerEmailTitle = registerEmailTitle;
+        this.registerEmailContent = registerEmailContent;
+        this.userInitUseSpace = userInitUserSpace;
     }
 
-    public String getMail_text() {
-        return Mail_text;
+    public String getRegisterEmailTitle() {
+        return registerEmailTitle;
     }
 
-    public void setMail_text(String mail_text) {
-        Mail_text = mail_text;
+    public void setRegisterEmailTitle(String registerEmailTitle) {
+        this.registerEmailTitle = registerEmailTitle;
     }
 
-    public Integer getUserInitUserSpace() {
-        return userInitUserSpace;
+    public String getRegisterEmailContent() {
+        return registerEmailContent;
     }
 
-    public void setUserInitUserSpace(Integer userInitUserSpace) {
-        this.userInitUserSpace = userInitUserSpace;
+    public void setRegisterEmailContent(String registerEmailContent) {
+        this.registerEmailContent = registerEmailContent;
+    }
+
+    public String getUserInitUseSpace() {
+        return userInitUseSpace;
+    }
+
+    public void setUserInitUseSpace(String userInitUseSpace) {
+        this.userInitUseSpace = userInitUseSpace;
+    }
+
+    @Override
+    public String toString() {
+        return "SenderDtoDefault{" +
+                "registerEmailTitle='" + registerEmailTitle + '\'' +
+                ", registerEmailContent='" + registerEmailContent + '\'' +
+                ", userInitUseSpace='" + userInitUseSpace + '\'' +
+                '}';
     }
 }

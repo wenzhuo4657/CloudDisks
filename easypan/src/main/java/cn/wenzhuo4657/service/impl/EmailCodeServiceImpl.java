@@ -96,8 +96,8 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
             helper.setFrom(appConfig.getUsername());
             helper.setTo(email);
             SenderDtoDefault senderDtoDefault=redisComponent.getSenderDtodefault();
-            helper.setSubject(senderDtoDefault.getMail_Title());
-            helper.setText(String.format(senderDtoDefault.getMail_text(),code));
+            helper.setSubject(senderDtoDefault.getRegisterEmailTitle());
+            helper.setText(String.format(senderDtoDefault.getRegisterEmailTitle(),code));
             helper.setSentDate(new Date());
             sender.send(message);
         } catch (MessagingException e) {

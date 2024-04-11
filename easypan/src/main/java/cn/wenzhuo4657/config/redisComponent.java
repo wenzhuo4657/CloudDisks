@@ -22,6 +22,9 @@ public class redisComponent {
         }
         return  senderDtoDefault;
     }
+    public void saveSenderDtodefault(SenderDtoDefault senderDtoDefault){
+     redisConfig.setCacheObject(HttpeCode.redis_Mail_Key,senderDtoDefault);
+    }
     @Resource
     private FileInfoMapper fileInfoMapper;
     public void saveUserid_space(String userID, UserSpace space){
@@ -35,7 +38,7 @@ public class redisComponent {
         if (null==space){
             space=new UserSpace();
             space.setUseSpace(1L);
-            space.setTotalSpace(getSenderDtodefault().getUserInitUserSpace()*HttpeCode.MB);
+            space.setTotalSpace(Integer.valueOf(getSenderDtodefault().getUserInitUseSpace())*HttpeCode.MB);
             saveUserid_space(userId,space);
         }
         return  space;

@@ -2,17 +2,19 @@ package cn.wenzhuo4657.service.impl;
 
 
 import cn.wenzhuo4657.config.RedisCache;
+import cn.wenzhuo4657.domain.dto.*;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
+import cn.wenzhuo4657.domain.enums.PageSize;
 import cn.wenzhuo4657.domain.enums.appconfig;
-import cn.wenzhuo4657.domain.dto.SenderDtoDefault;
-import cn.wenzhuo4657.domain.dto.SessionDto;
-import cn.wenzhuo4657.domain.dto.UserSpace;
 import cn.wenzhuo4657.domain.entity.UserInfo;
+import cn.wenzhuo4657.domain.query.SimplePage;
+import cn.wenzhuo4657.domain.query.UserInfoQuery;
 import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.mapper.FileInfoMapper;
 import cn.wenzhuo4657.mapper.UserInfoMapper;
 import cn.wenzhuo4657.service.EmailCodeService;
 import cn.wenzhuo4657.service.UserInfoService;
+import cn.wenzhuo4657.utils.BeancopyUtils;
 import cn.wenzhuo4657.utils.StringUtil;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -24,6 +26,7 @@ import cn.wenzhuo4657.config.redisComponent;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * (UserInfo)表服务实现类
@@ -72,8 +75,8 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
         new_user.setPassword(StringUtil.getMd5(password));
 
         SenderDtoDefault senderDtoDefault=redisComponent.getSenderDtodefault();
-        new_user.setTotalSpace(senderDtoDefault.getUserInitUserSpace().longValue()*HttpeCode.MB);
-        new_user.setUserSpace(0L);
+        new_user.setTotalSpace(Integer.valueOf(senderDtoDefault.getUserInitUseSpace())*HttpeCode.MB);
+        new_user.setUseSpace(0L);
         this.mapper.insert(new_user);
     }
     @Resource
@@ -134,4 +137,16 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
 
     }
 
+    @Override
+    public PaginationResultDto findListByPage(UserInfoQuery query) {
+
+        int count = mapper.selectCount(query);
+        int pageSize = query.getPageSize() == null ? PageSize.SIZE15.getSize() : query.getPageSize();
+        SimplePage IF = new SimplePage(query.getPageNo(), count, pageSize);
+        query.setSimplePage(IF);
+        List<UserInfoVo> list = BeancopyUtils.copyBeanList(mapper.findListByInfoQuery(query), UserInfoVo.class);
+        PaginationResultDto<UserInfoVo> resultDto =
+                new PaginationResultDto<>(count, IF.getPageSize(), IF.getPageNo(), IF.getPageTotal(), list);
+        return resultDto;
+    }
 }

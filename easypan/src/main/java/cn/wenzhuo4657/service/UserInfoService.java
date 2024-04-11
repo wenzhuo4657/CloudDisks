@@ -1,7 +1,9 @@
 package cn.wenzhuo4657.service;
 
+import cn.wenzhuo4657.domain.dto.PaginationResultDto;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.entity.UserInfo;
+import cn.wenzhuo4657.domain.query.UserInfoQuery;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 
@@ -19,4 +21,6 @@ public interface UserInfoService extends IService<UserInfo> {
 
 
     void resetPwd(String email, String password, String emailCode);
+
+    PaginationResultDto findListByPage(UserInfoQuery query);
 }

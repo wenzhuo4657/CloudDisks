@@ -49,6 +49,7 @@ public enum HttpeCode {
     public static String Check_Type_1="1";
     public static String redis_downloadDto="redis_downloadDto";
     public static String LoadRecycleList_File_sort="remove_time";
+    public static Integer code_length_20=20;
 
 
     int code;

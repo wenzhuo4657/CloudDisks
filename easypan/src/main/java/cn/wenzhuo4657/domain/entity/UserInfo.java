@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @TableName("user_info")
 public class UserInfo  {
     //用户id@TableId
+    @TableId
     private String userId;
 
     
@@ -44,7 +45,7 @@ public class UserInfo  {
     //用户状态，0表禁用，1表正常
     private Integer status;
     //使用的网盘大小，单位byte
-    private Long userSpace;
+    private Long useSpace;
     //可使用的网盘总量
     private Long totalSpace;
     

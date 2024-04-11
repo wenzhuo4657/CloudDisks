@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.wenzhuo4657.mapper.FileShareMapper">
+
+
+
+    <!--实体映射-->
+    <resultMap id="base_result_map" type="cn.wenzhuo4657.domain.entity.FileShare">
+        <!--分享ID-->
+        <result column="share_id" property="shareId"/>
+        <!--文件ID-->
+        <result column="file_id" property="fileId"/>
+        <!--用户ID-->
+        <result column="user_id" property="userId"/>
+        <!--有效期类型 0:1天 1:7天 2:30天 3:永久有效-->
+        <result column="valid_type" property="validType"/>
+        <!--失效时间-->
+        <result column="expire_time" property="expireTime"/>
+        <!--分享时间-->
+        <result column="share_time" property="shareTime"/>
+        <!--提取码-->
+        <result column="code" property="code"/>
+        <!--浏览次数-->
+        <result column="show_count" property="showCount"/>
+        <!--文件名称-->
+        <result column="file_name" property="fileName"/>
+        <!--封面-->
+        <result column="file_cover" property="fileCover"/>
+        <!--0:文件 1:目录-->
+        <result column="folder_type" property="folderType"/>
+        <!--1:视频 2:音频  3:图片 4:文档 5:其他-->
+        <result column="file_category" property="fileCategory"/>
+        <!-- 1:视频 2:音频  3:图片 4:pdf 5:doc 6:excel 7:txt 8:code 9:zip 10:其他-->
+        <result column="file_type" property="fileType"/>
+    </resultMap>
+
+    <sql id="base_condition_filed">
+        <if test="shareId != null and shareId!=''">
+            and share_id = #{shareId}
+        </if>
+        <if test="fileId != null and fileId!=''">
+            and s.file_id = #{fileId}
+        </if>
+        <if test="userId != null and userId!=''">
+            and s.user_id = #{userId}
+        </if>
+        <if test="validType != null">
+            and valid_type = #{validType}
+        </if>
+        <if test="expireTime != null and expireTime!=''">
+            <![CDATA[ and  expire_time=str_to_date(#{expireTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="shareTime != null and shareTime!=''">
+            <![CDATA[ and  share_time=str_to_date(#{shareTime}, '%Y-%m-%d') ]]>
+        </if>
+        <if test="code != null and code!=''">
+            and code = #{code}
+        </if>
+        <if test="showCount != null">
+            and show_count = #{showCount}
+        </if>
+    </sql>
+
+    <!-- 通用查询结果列-->
+    <sql id="base_column_list">
+        share_id,s.file_id,s.user_id,valid_type,expire_time,
+		 share_time,code,show_count
+    </sql>
+
+    <!-- 通用查询条件列-->
+    <sql id="query_condition">
+        <where>
+            <include refid="base_condition_filed"/>
+            <if test="shareIdFuzzy!= null  and shareIdFuzzy!=''">
+                and share_id like concat('%', #{shareIdFuzzy}, '%')
+            </if>
+            <if test="fileIdFuzzy!= null  and fileIdFuzzy!=''">
+                and s.file_id like concat('%', #{fileIdFuzzy}, '%')
+            </if>
+            <if test="userIdFuzzy!= null  and userIdFuzzy!=''">
+                and s.user_id like concat('%', #{userIdFuzzy}, '%')
+            </if>
+            <if test="expireTimeStart!= null and expireTimeStart!=''">
+                <![CDATA[ and  expire_time>=str_to_date(#{expireTimeStart}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="expireTimeEnd!= null and expireTimeEnd!=''">
+                <![CDATA[ and  expire_time< date_sub(str_to_date(#{expireTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+            </if>
+            <if test="shareTimeStart!= null and shareTimeStart!=''">
+                <![CDATA[ and  share_time>=str_to_date(#{shareTimeStart}, '%Y-%m-%d') ]]>
+            </if>
+            <if test="shareTimeEnd!= null and shareTimeEnd!=''">
+                <![CDATA[ and  share_time< date_sub(str_to_date(#{shareTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+            </if>
+            <if test="codeFuzzy!= null  and codeFuzzy!=''">
+                and code like concat('%', #{codeFuzzy}, '%')
+            </if>
+        </where>
+    </sql>
+    <delete id="delBatch">
+        delete from file_share
+        where user_id=#{userId}
+        and share_id in(<foreach collection="fileIdArray" separator="," item="item">#{item}</foreach>)
+    </delete>
+    <select id="selectCount" resultType="java.lang.Integer">
+        select  count(*) from file_share s
+        <include refid="query_condition"></include>
+    </select>
+
+    <select id="selectListByQuery" resultType="cn.wenzhuo4657.domain.entity.FileShare" resultMap="base_result_map">
+        SELECT 
+            <include refid="base_column_list"></include>
+        <if test="queryFileName!=null and queryFileName">
+            ,f.file_name,f.folder_type,f.file_category,f.file_type,f.file_cover
+        </if>
+        FROM file_share s
+        <if test="queryFileName!=null and queryFileName">
+            left join file_info f on s.file_id = f.file_id and f.user_id = #{userId}
+        </if>
+        <include refid="query_condition"/>
+        <if test="orderBy!=null">order by ${orderBy}</if>
+        <if test="simplePage!=null">limit #{simplePage.start},#{simplePage.end}</if>
+    </select>
+</mapper>
