@@ -12,15 +12,16 @@ import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.mapper.FileInfoMapper;
 import cn.wenzhuo4657.utils.BeancopyUtils;
 import cn.wenzhuo4657.utils.StringUtil;
-import com.sun.deploy.net.HttpResponse;
-import javafx.scene.shape.Path;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Objects;
@@ -69,7 +70,6 @@ public class CommonFileSupport extends  ControllerSupport{
 * @return void
 **/
     protected void getVideoFile(HttpServletResponse response, String userId, String fileId) {
-        //  wenzhuo TODO 2024/4/8 : md5相同的两个文件一个位于回收站，一个位于正常的网盘路径上时，无法打开视频预览
         if (StringUtil.isEmpty(fileId)){
             return;
         }
@@ -106,6 +106,7 @@ public class CommonFileSupport extends  ControllerSupport{
                         +"/"+moth
                         +"/"+userId+HttpeCode.tempFile+fileId
                         +"/"+HttpeCode.M3U8_NAME;
+            //  wenzhuo TODO 2024/4/14 : bugmd5相同的两个文件,秒传无法打开视频预览:是由于路径拼接，该路径拼接，对于秒传文件无法找到原文件的路径
             File file=new File(path);
             if (!file.exists()){
                 return;
@@ -141,13 +142,12 @@ public class CommonFileSupport extends  ControllerSupport{
         * @Param [sessionDto, path]
         * @return cn.wenzhuo4657.domain.ResponseVo
         **/
-    protected ResponseVo getFolderInfo(SessionDto sessionDto, String path) {
+    protected ResponseVo getFolderInfo(String userId, String path) {
         String [] array=path.split("/");
         FileInfoQuery fileInfoQuery=new FileInfoQuery();
         fileInfoQuery.setFileIdArray(array);
         fileInfoQuery.setFolderType(FileFolderTypeEnums.FOLDER.getType());
-        if (!Objects.isNull(sessionDto)){
-            String userId=sessionDto.getUserId();
+        if (!Objects.isNull(userId)){
             fileInfoQuery.setUserId(userId);
         }
         String OrderBy="field(file_id,\'"+ StringUtils.join(array,"\',\'") +"\')";
@@ -188,7 +188,22 @@ public class CommonFileSupport extends  ControllerSupport{
     }
 
 
-
-
-
+    protected void download(HttpServletRequest request, HttpServletResponse response, String code) throws UnsupportedEncodingException {
+        DownloadFileDto dto=redisComponent.getDownloadCode(code);
+        if (Objects.isNull(dto)){
+            throw  new SystemException(ResponseEnum.CODE_600);
+        }
+        String filePath= appconfig.getProjectFolder()
+                + "/"+ HttpeCode.File_userid
+                +"/"+dto.getFilePath();
+        String fileName=dto.getFileName();
+        response.setContentType("application/x-msdownload; charset=UTF-8");
+        if (request.getHeader("User-Agent").toLowerCase().indexOf("msie") > 0) {
+            fileName = URLEncoder.encode(fileName, "UTF-8");
+        } else {
+            fileName = new String(fileName.getBytes("UTF-8"), "ISO8859-1");
+        }
+        response.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+        readFile(response, filePath);
+    }
 }

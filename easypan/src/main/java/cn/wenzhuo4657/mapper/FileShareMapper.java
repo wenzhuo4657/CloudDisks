@@ -1,5 +1,6 @@
 package cn.wenzhuo4657.mapper;
 
+import cn.wenzhuo4657.domain.dto.SessionShareDto;
 import cn.wenzhuo4657.domain.entity.FileShare;
 import cn.wenzhuo4657.domain.query.FileShareQuery;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -21,4 +22,10 @@ public interface FileShareMapper extends BaseMapper<FileShare> {
     List<FileShare> selectListByQuery(FileShareQuery param);
 
     int delBatch(String userId, String[] fileIdArray);
+
+    FileShare selectByShareId(String shareId);
+
+
+    void updateByShareId(String shareId);
+
 }

@@ -36,4 +36,6 @@ public interface FileInfoService extends IService<FileInfo> {
     void recoverFileBatch(String userId, String fileIds);
 
     void delFileBatch(String userId, String fileIds, boolean admin);
+
+    void saveShare(String fileId, String shareFileIds, String myFolderId, String shareUserId, String userId);
 }

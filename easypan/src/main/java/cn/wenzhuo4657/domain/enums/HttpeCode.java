@@ -50,6 +50,8 @@ public enum HttpeCode {
     public static String redis_downloadDto="redis_downloadDto";
     public static String LoadRecycleList_File_sort="remove_time";
     public static Integer code_length_20=20;
+    public static String SessionShareDto_Key="session_share_key_";
+    public static String zero_str="0";
 
 
     int code;

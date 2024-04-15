@@ -130,6 +130,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
                     doFile.setLastUpdateTime(curtime);
                     doFile.setStatus(FileStatusEnums.USING.getStatus());
                     doFile.setDelFlag(FileDefalgEnums.USING.getStatus());
+
                     filename = autoRename(filePid, sessionDto.getUserId(), filename);
                     doFile.setFileName(filename);
                     this.fileInfoMapper.insert(doFile);
@@ -662,7 +663,68 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper, FileInfo> i
         UserSpace userSpace= redisComponent.getUserSpaceUser(userId);
         userSpace.setUseSpace(useSpace);
         redisComponent.saveUserid_space(userId,userSpace);
-
-
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveShare(String fileId, String shareFileIds, String myFolderId, String shareUserId, String userId) {
+//        String[] shareFileIdArray = shareFileIds.split(",");
+//        //获取别人分享的文件链接里面的文件列表
+//        FileInfoQuery fileInfoQuery = new FileInfoQuery();
+//        fileInfoQuery.setUserId(userId);
+//        fileInfoQuery.setFilePid(myFolderId);
+//        List<FileInfo> currentFileList = fileInfoMapper.selectList(fileInfoQuery);
+//        Map<String, FileInfo> currentFileMap = currentFileList.stream().collect(Collectors.toMap(FileInfo::getFileName, Function.identity(), (file1, file2) -> file2));
+//        //查询选中的文件
+//        fileInfoQuery = new FileInfoQuery();
+//        fileInfoQuery.setUserId(shareUserId);
+//        fileInfoQuery.setFileIdArray(shareFileIdArray);
+//        List<FileInfo> shareFileList = fileInfoMapper.selectList(fileInfoQuery);
+//        //重命名
+//        List<FileInfo> copyFileList = new ArrayList<>();
+//        Date curDate = new Date();
+//        for (FileInfo item : shareFileList) {
+//            FileInfo haveFile = currentFileMap.get(item.getFileName());
+//            if (haveFile != null) {
+//                item.setFileName(StringUtil.rename(item.getFileName()));
+//            }
+//            //遍历子文件|子目录
+//            findAllSubFile(copyFileList, item, shareUserId, cureentUserId, curDate, myFolderId);
+//        }
+//        fileInfoMapper.insertBatch(copyFileList);
+//
+//        //更新mysql里面的用户空间
+//        Long useSpace = fileInfoMapper.selectUseSpace(cureentUserId);
+//        UserInfo dbUserInfo = userInfoMapper.selectByUserId(cureentUserId);
+//        if (useSpace > dbUserInfo.getTotalSpace()) {
+//            throw new SystemException(HttpeCode.SHARE_NOT_EXIT);
+//        }
+//        UserInfo userInfo = new UserInfo();
+//        userInfo.setUserSpace(useSpace);
+//        userInfoMapper.updateByUserId(userInfo, cureentUserId);
+//        //更新redis里面的用户空间
+//        UserSpaceDto userSpaceDto = redisComponent.getUserSpaceUse(cureentUserId);
+//        userSpaceDto.setUseSpace(useSpace);
+//        redisComponent.saveUserSpace(cureentUserId, userSpaceDto);
+        return;
+    }
+//    private void findAllSubFile(List<FileInfo> copyFileList, FileInfo fileInfo, String sourceUserId, String currentUserId, Date curDate, String newFilePid) {
+//        String sourceFileId = fileInfo.getFileId();
+//        fileInfo.setCreateTime(curDate);
+//        fileInfo.setLastUpdateTime(curDate);
+//        fileInfo.setFilePid(newFilePid);
+//        fileInfo.setUserId(currentUserId);
+//        String newFileId = StringUtil.getRandom_Number(HttpeCode.code_length_10);
+//        fileInfo.setFileId(newFileId);
+//        copyFileList.add(fileInfo);
+//        if (FileFolderTypeEnums.FOLDER.getType().equals(fileInfo.getFolderType())) {
+//            FileInfoQuery query = new FileInfoQuery();
+//            query.setFilePid(sourceFileId);
+//            query.setUserId(sourceUserId);
+//            List<FileInfo> sourceFileList = fileInfoMapper.selectList(query);
+//            for (FileInfo item : sourceFileList) {
+//                findAllSubFile(copyFileList, item, sourceUserId, currentUserId, curDate, newFileId);
+//            }
+//        }
+//    }
 }

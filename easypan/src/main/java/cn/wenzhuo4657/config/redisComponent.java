@@ -30,7 +30,6 @@ public class redisComponent {
     @Resource
     private FileInfoMapper fileInfoMapper;
     public void saveUserid_space(String userID, UserSpace space){
-        //  wenzhuo TODO 2024/3/27 : 时间颗粒度和时间的使用，此处暂且不改变键值对的生命周期
         redisConfig.setCacheObject(HttpeCode.redis_userid_space+userID,space);
 
     }

@@ -40,7 +40,7 @@ public class UserInfo  {
 
     @TableField(fill = FieldFill.INSERT)
     private Date creatTime;
-    @TableField(fill = FieldFill.UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE,value = "update_time")
     private Date updateTime;
     //用户状态，0表禁用，1表正常
     private Integer status;

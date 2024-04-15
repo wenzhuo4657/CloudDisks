@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import javax.annotation.Resource;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.util.Date;
+import java.util.Properties;
 
 /**
  * 邮箱验证码 表
@@ -45,8 +47,7 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
     @Autowired
     private UserInfoMapper userInfoMapper;
 
-    @Resource
-    private JavaMailSender sender;
+
 
     @Resource
     private appconfig appConfig;
@@ -74,9 +75,6 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
 //        将数据库中同邮箱的所有验证码停用
         emailCodeMapper.disableEmailCode(email);
 
-
-//
-
         EmailCode emailCode=new EmailCode();
         emailCode.setCode(code);
         emailCode.setEmail(email);
@@ -88,6 +86,9 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
 
     }
 
+
+    @Resource
+    private JavaMailSender sender;
     private void sendEmail(String email, String code) {
 
         MimeMessage message=sender.createMimeMessage();
@@ -100,6 +101,16 @@ public class EmailCodeServiceImpl extends ServiceImpl<EmailCodeMapper, EmailCode
             helper.setSubject(senderDtoDefault.getRegisterEmailTitle());
             helper.setText(String.format(senderDtoDefault.getRegisterEmailContent(),code));
             helper.setSentDate(new Date());
+//            //开启ssl
+//            Properties properties = new Properties();
+//            properties.setProperty("mail.smtp.auth", "true");//开启认证
+//            properties.setProperty("mail.debug", "true");//启用调试
+//            properties.setProperty("mail.smtp.timeout", "200000");//设置链接超时
+//            properties.setProperty("mail.smtp.port", Integer.toString(25));//设置端口
+//            properties.setProperty("mail.smtp.socketFactory.port", Integer.toString(465));//设置ssl端口
+//            properties.setProperty("mail.smtp.socketFactory.fallback", "false");
+//            properties.setProperty("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+//            JavaMailSender.setJavaMailProperties(properties);
             sender.send(message);
         } catch (MessagingException e) {
             logger.info("{}",e);

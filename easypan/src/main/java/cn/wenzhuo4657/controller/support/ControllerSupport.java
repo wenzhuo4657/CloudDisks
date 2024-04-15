@@ -1,5 +1,6 @@
 package cn.wenzhuo4657.controller.support;
 
+import cn.wenzhuo4657.domain.dto.SessionShareDto;
 import cn.wenzhuo4657.domain.enums.HttpeCode;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.exception.SystemException;
@@ -69,6 +70,12 @@ public class ControllerSupport {
     protected SessionDto getUserInfofromSession(HttpSession session){
         SessionDto sessionDto=(SessionDto)  session.getAttribute(HttpeCode.SessionDto_key);
         return  sessionDto;
+    }
+
+
+    protected SessionShareDto getSessionSharefromSession(HttpSession session, String shareId){
+        SessionShareDto sessionShareDto=(SessionShareDto) session.getAttribute(HttpeCode.SessionShareDto_Key+shareId);
+        return  sessionShareDto;
     }
 
 }

@@ -1,6 +1,7 @@
 package cn.wenzhuo4657.service.impl;
 
 import cn.wenzhuo4657.domain.dto.PaginationResultDto;
+import cn.wenzhuo4657.domain.dto.SessionShareDto;
 import cn.wenzhuo4657.domain.entity.FileInfo;
 import cn.wenzhuo4657.domain.entity.FileShare;
 import cn.wenzhuo4657.domain.enums.*;
@@ -73,5 +74,23 @@ public class FileShareServiceImpl extends ServiceImpl<FileShareMapper, FileShare
         if (count!=fileIdArray.length){
             throw  new SystemException(ResponseEnum.CODE_600);//一旦返回了无效的fileid，直接回滚，操作无效
         }
+    }
+
+    @Override
+    public SessionShareDto checkShareCode(String shareId, String code) {
+        FileShare share=this.fileShareMapper.selectByShareId(shareId);
+        if (Objects.isNull(share) || (share.getExpireTime() != null && new Date().after(share.getExpireTime()))) {
+            throw new SystemException(ResponseEnum.CODE_902);
+        }
+        if (!share.getCode().equals(code)){
+            throw  new SystemException("提取码错误");
+        }
+        fileShareMapper.updateByShareId(shareId);
+        SessionShareDto sessionShareDto=new SessionShareDto();
+        sessionShareDto.setShareUserId(share.getUserId());
+        sessionShareDto.setShareId(shareId);
+        sessionShareDto.setExpireTime(share.getExpireTime());
+        sessionShareDto.setFileId(share.getFileId());
+        return sessionShareDto;
     }
 }

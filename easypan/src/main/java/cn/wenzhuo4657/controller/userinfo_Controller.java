@@ -12,6 +12,7 @@ import cn.wenzhuo4657.domain.dto.CreateImageCode;
 import cn.wenzhuo4657.domain.dto.SessionDto;
 import cn.wenzhuo4657.domain.dto.UserSpace;
 import cn.wenzhuo4657.domain.entity.UserInfo;
+import cn.wenzhuo4657.exception.SystemException;
 import cn.wenzhuo4657.service.UserInfoService;
 import cn.wenzhuo4657.service.impl.EmailCodeServiceImpl;
 import cn.wenzhuo4657.utils.StringUtil;
@@ -33,6 +34,9 @@ import java.io.PrintWriter;
 
 @RestController("userinfoController")//这里指定了rest控制器的名称，默认情况下是类名
 public class userinfo_Controller extends ControllerSupport {
+
+
+    //  wenzhuo TODO 2024/4/14 :  qq登录代配置
     @Resource
     private UserInfoService userInfoService;
 
@@ -45,6 +49,7 @@ public class userinfo_Controller extends ControllerSupport {
         response.setDateHeader("Expires", 0);
         response.setContentType("image/jpeg");
         String code = vcode.getCode();
+//        邮箱验证码0，登录是0，恢复密码是0，恢复邮箱验证码是1，注册邮箱验证码是1
 
         if (type == null || type == 0) {
             session.setAttribute(HttpeCode.Check_Type_0, code);
@@ -62,9 +67,10 @@ public class userinfo_Controller extends ControllerSupport {
     @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo sendEmail(HttpSession session, @VerifyParam(required = true, regex = VerifyRegexEnum.EMALL) String email, String checkCode, Integer type) {
         try {
-//            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
-//                throw new SystemException(HttpeCode.Image_no_OK);
-//            }
+//            type==1
+            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_NO_Ok))) {
+                throw new SystemException(HttpeCode.Image_no_OK);
+            }
             emailCodeService.sendEmailcode(email, type);
             return ResponseVo.ok();
         } finally {
@@ -77,10 +83,9 @@ public class userinfo_Controller extends ControllerSupport {
     @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo register(HttpSession session,  String email,String nickName,  String password, String checkCode, String emailCode) {
         try {
-            //  wenzhuo TODO 2024/3/30 : 验证码逻辑混乱，且生成验证码大小写似乎有错误
-//            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
-//                throw new SystemException(HttpeCode.Image_no_OK);
-//            }
+            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
+                throw new SystemException(HttpeCode.Image_no_OK);
+            }
             userInfoService.register(email, nickName, password, emailCode);
             return ResponseVo.ok();
         } finally {
@@ -93,9 +98,9 @@ public class userinfo_Controller extends ControllerSupport {
     @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo login(HttpSession session, String email, String password, String checkCode, Integer type) {
         try {
-//            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_NO_Ok))) {
-//                throw new SystemException(HttpeCode.Image_no_OK);
-//            }
+            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
+                throw new SystemException(HttpeCode.Image_no_OK);
+            }
             SessionDto sessionDto = userInfoService.login(email,  password);
             session.setAttribute(HttpeCode.SessionDto_key,sessionDto);
             return ResponseVo.ok(sessionDto);
@@ -112,9 +117,9 @@ public class userinfo_Controller extends ControllerSupport {
                                String password, String checkCode,
                                String emailCode, Integer type) {
         try {
-//            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_NO_Ok))) {
-//                throw new SystemException(HttpeCode.Image_no_OK);
-//            }
+            if (!checkCode.equalsIgnoreCase((String) session.getAttribute(HttpeCode.Check_Ok))) {
+                throw new SystemException(HttpeCode.Image_no_OK);
+            }
             userInfoService.resetPwd(email,  password, emailCode);
             return ResponseVo.ok();
         } finally {
@@ -130,7 +135,7 @@ public class userinfo_Controller extends ControllerSupport {
 
 
     @GetMapping("/getAvatar/{userId}")
-    @Global_interceptor(checkparams = true)
+    @Global_interceptor(checkparams = true,checkLogin = false)
     public  void getAvatar(HttpServletResponse response,
                                  @PathVariable ("userId") String userid){
 

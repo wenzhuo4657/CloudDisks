@@ -49,6 +49,7 @@ public class FileShareController extends ControllerSupport {
                                   @VerifyParam(required = true) String fileId,
                                   @VerifyParam(required=true) Integer validType,
                                 String code){
+
         SessionDto sessionDto=getUserInfofromSession(session);
         FileShare share=new FileShare();
         share.setCode(code);
@@ -56,7 +57,7 @@ public class FileShareController extends ControllerSupport {
         share.setUserId(sessionDto.getUserId());
         share.setValidType(validType);
         fileShareService.saveShare(share);
-        return  ResponseVo.ok();
+        return  ResponseVo.ok(share);
     }
 
     @PostMapping("/cancelShare")
@@ -67,6 +68,7 @@ public class FileShareController extends ControllerSupport {
         fileShareService.delFileShareBatch(sessionDto.getUserId(), shareIds.split(","));
         return  ResponseVo.ok();
     }
+
 
 
 

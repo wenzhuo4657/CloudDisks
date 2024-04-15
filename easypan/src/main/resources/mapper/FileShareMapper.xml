@@ -97,6 +97,11 @@
             </if>
         </where>
     </sql>
+    <update id="updateByShareId">
+        update  file_share
+        set show_count=show_count+1
+        where  share_id=#{shareId}
+    </update>
     <delete id="delBatch">
         delete from file_share
         where user_id=#{userId}
@@ -120,5 +125,11 @@
         <include refid="query_condition"/>
         <if test="orderBy!=null">order by ${orderBy}</if>
         <if test="simplePage!=null">limit #{simplePage.start},#{simplePage.end}</if>
+    </select>
+    <select id="selectByShareId" resultType="cn.wenzhuo4657.domain.entity.FileShare">
+        SELECT
+        <include refid="base_column_list"></include>
+        FROM file_share s
+        where share_id=#{share_id}
     </select>
 </mapper>

@@ -1,0 +1,60 @@
+server:
+ port: 7090
+ servlet:
+  context-path: /api
+
+spring:
+# 当插入到数据库的时间正确，但是从数据库查询的时候，少8小时，就添加如下的jackson配置
+ jackson:
+   date-format: yyyy-MM-dd HH:mm:ss
+   time-zone: GMT+8
+   serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+# 数据库连接信息
+ datasource:
+  url: jdbc:mysql://172.18.0.1:3306/easypan?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+  username: root
+  password: 123456
+  driver-class-name: com.mysql.cj.jdbc.Driver
+
+ servlet:
+# 文件上传
+   multipart:
+# 单个上传文件的最大允许大小
+    max-file-size: 20MB
+# HTTP请求中包含的所有文件的总大小的最大允许值
+    max-request-size: 20MB
+
+ redis:
+  host: 192.168.0.134
+  port: 6379
+
+ mail:
+# 哪个平台的邮箱，smtp表示协议，163.com表示平台
+  host: smtp.qq.com
+# 发送人 你真实的邮箱账号
+  username: houwenzhuo4657@qq.com
+  port: 465
+# 在163邮箱平台，开启服务，会自动给你一个授权码
+  password: irdhuwrhurapdiia
+
+mybatis-plus:
+  configuration:
+# 日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+# 超级管理员账号
+admin:
+  emails: 14783149521@163.com
+
+# 项目目录。如果是Centos系统就改为 /root/SpringBootPanDownload。windows就改为d:/SpringBootPanDownload。注意不需要手动创建目录，程序会自动去创建
+project:
+  folder: /root/SpringBootPanDownload
+#  folder: d:/SpringBootPanDownload
+
+
+
+logging:
+  pattern:
+     console: "%d %clr(%5p) --- [焕发@青春 %5t] %clr(%-40.40c){cyan} : %m %n"

@@ -140,22 +140,7 @@ public class AdminController extends CommonFileSupport {
     @GetMapping("download/{code}")
     @Global_interceptor(checkLogin = false)
     public  void  download(HttpServletRequest request, HttpServletResponse response, @PathVariable(value = "code") String code ) throws UnsupportedEncodingException {
-        DownloadFileDto dto=redisComponent.getDownloadCode(code);
-        if (Objects.isNull(dto)){
-            throw  new SystemException(ResponseEnum.CODE_600);
-        }
-        String filePath= appconfig.getProjectFolder()
-                + "/"+ HttpeCode.File_userid
-                +"/"+dto.getFilePath();
-        String fileName=dto.getFileName();
-        response.setContentType("application/x-msdownload; charset=UTF-8");
-        if (request.getHeader("User-Agent").toLowerCase().indexOf("msie") > 0) {
-            fileName = URLEncoder.encode(fileName, "UTF-8");
-        } else {
-            fileName = new String(fileName.getBytes("UTF-8"), "ISO8859-1");
-        }
-        response.setHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
-        readFile(response, filePath);
+        super.download(request,response,code);
     }
 
 
