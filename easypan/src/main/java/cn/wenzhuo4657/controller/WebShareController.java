@@ -104,6 +104,7 @@ public class WebShareController extends CommonFileSupport {
     public ResponseVo checkShareCode( HttpSession session,
                                       @VerifyParam(required = true) String shareId,
                                       @VerifyParam(required = true) String code) {
+
         SessionShareDto sessionShareDto=fileShareService.checkShareCode(shareId,code);
         session.setAttribute(HttpeCode.SessionShareDto_Key+shareId,sessionShareDto);
         return ResponseVo.ok();

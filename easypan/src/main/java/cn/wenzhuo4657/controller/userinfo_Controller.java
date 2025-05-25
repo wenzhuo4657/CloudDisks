@@ -200,6 +200,7 @@ public class userinfo_Controller extends ControllerSupport {
     @PostMapping("/logout")
     @Global_interceptor(checkparams = true)
     public  ResponseVo logout(HttpSession session){
+//        todo 该接口不应当使用拦截器，因为该接口不需要进行登录验证
         session.invalidate();
         return  ResponseVo.ok();
     }

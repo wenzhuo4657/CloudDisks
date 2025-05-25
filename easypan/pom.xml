@@ -89,9 +89,6 @@
             <version>${springboot.version}</version>
         </dependency>
 
-
-
-
         <!-- 数据库-->
         <dependency>
             <groupId>mysql</groupId>
@@ -163,24 +160,15 @@
                     <skip>true</skip>
                 </configuration>
             </plugin>
-            <!--需添加下面插件，否则java -jar命令启动报SrpingApplication类找不到错误-->
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <!--需添加下面插件，否则java -jar命令启动报没有主清单错误-->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>cn.wenzhuo4657.Main</mainClass>
-                        </manifest>
-                    </archive>
+                    <mainClass>cn.wenzhuo4657.Main</mainClass>
+                    <layout>JAR</layout>
                 </configuration>
             </plugin>
-
 
         </plugins>
     </build>

@@ -13,9 +13,9 @@ spring:
 
 # 数据库连接信息
  datasource:
-  url: jdbc:mysql://172.18.0.1:3306/easypan?characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+  url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:cloudDisks}?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&serverTimezone=UTC&useSSL=true
   username: root
-  password: 123456
+  password: 465700
   driver-class-name: com.mysql.cj.jdbc.Driver
 
  servlet:
@@ -27,8 +27,9 @@ spring:
     max-request-size: 20MB
 
  redis:
-  host: 192.168.0.134
-  port: 6379
+  host: ${REDIS_HOST:127.0.0.1}
+  port: ${REDIS_PORT:6379}
+  database: ${REDIS_DATABASE:0}
 
  mail:
 # 哪个平台的邮箱，smtp表示协议，163.com表示平台
@@ -44,6 +45,7 @@ mybatis-plus:
 # 日志
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+
 # 超级管理员账号
 admin:
   emails: 14783149521@163.com
@@ -54,7 +56,3 @@ project:
 #  folder: d:/SpringBootPanDownload
 
 
-
-logging:
-  pattern:
-     console: "%d %clr(%5p) --- [焕发@青春 %5t] %clr(%-40.40c){cyan} : %m %n"
