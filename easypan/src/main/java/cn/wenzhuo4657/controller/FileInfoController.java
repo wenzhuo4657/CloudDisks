@@ -204,6 +204,9 @@ public class FileInfoController extends CommonFileSupport {
     private redisComponent redisComponent;
     @Resource
     private  appconfig appconfig;
+
+//    todo 这里要实现断点续传
+//    ps：这里需要场景修改前端，或者使用模板引擎做一个nginx代理的静态页面，方便后期作为个人云盘
     @GetMapping("download/{code}")
     @Global_interceptor(checkLogin = false)
     public  void  download(HttpServletRequest request,HttpServletResponse response,@PathVariable(value = "code") String code ) throws UnsupportedEncodingException {

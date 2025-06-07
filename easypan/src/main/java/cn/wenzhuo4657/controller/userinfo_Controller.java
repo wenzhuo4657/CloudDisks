@@ -94,6 +94,7 @@ public class userinfo_Controller extends ControllerSupport {
         }
     }
 
+//    todo 提示信息修改，或者插入统一异常管理机制，。
     @PostMapping("/login")
     @Global_interceptor(checkparams = true,checkLogin = false)
     public ResponseVo login(HttpSession session, String email, String password, String checkCode, Integer type) {

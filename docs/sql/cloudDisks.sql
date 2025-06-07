@@ -27,7 +27,7 @@ DROP TABLE IF EXISTS `email_code`;
 CREATE TABLE `email_code` (
   `email` varchar(200) NOT NULL COMMENT '邮箱',
   `code` varchar(10) NOT NULL COMMENT '编号',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `creat_time` datetime DEFAULT NULL COMMENT '创建时间',
   `status` tinyint(1) DEFAULT NULL COMMENT '状态(0未使用 1已使用)',
   PRIMARY KEY (`email`,`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='邮箱验证码';
@@ -39,6 +39,7 @@ CREATE TABLE `email_code` (
 
 LOCK TABLES `email_code` WRITE;
 /*!40000 ALTER TABLE `email_code` DISABLE KEYS */;
+INSERT INTO `email_code` VALUES ('14783149521@163.com','48655','2025-05-28 03:48:12',0);
 /*!40000 ALTER TABLE `email_code` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -64,7 +65,7 @@ CREATE TABLE `file_info` (
   `file_category` tinyint(1) DEFAULT NULL COMMENT '文件分类 1视频 2音频 3图片 4文档 5其它',
   `file_type` tinyint(1) DEFAULT NULL COMMENT '文件类型 1视频 2音频 3图片 4pdf 5doc 6excel 7txt 8code 9zip 10其它',
   `status` tinyint(1) DEFAULT NULL COMMENT '状态 0转码中 1转码失败 2转码成功',
-  `recovery_time` datetime DEFAULT NULL COMMENT '文件被删除的时间',
+  `remove_time` datetime DEFAULT NULL COMMENT '文件被删除的时间',
   `del_flag` tinyint(1) DEFAULT NULL COMMENT '逻辑删除 0删除 1回收站 2正常',
   PRIMARY KEY (`file_id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文件信息表';
@@ -76,6 +77,7 @@ CREATE TABLE `file_info` (
 
 LOCK TABLES `file_info` WRITE;
 /*!40000 ALTER TABLE `file_info` DISABLE KEYS */;
+INSERT INTO `file_info` VALUES ('38291','4444452080','5c0c7f9e3da839bc28408b955bb85d8c','0',674147,'github-pages.zip',NULL,'202505/4444452080tempFile38291.zip','2025-05-28 03:49:54','2025-05-28 03:49:54',0,5,9,2,'2025-06-07 06:58:10',1);
 /*!40000 ALTER TABLE `file_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -105,6 +107,7 @@ CREATE TABLE `file_share` (
 
 LOCK TABLES `file_share` WRITE;
 /*!40000 ALTER TABLE `file_share` DISABLE KEYS */;
+INSERT INTO `file_share` VALUES ('52918260363136783873','38291','4444452080',3,NULL,'2025-06-07 06:19:09','55289',NULL);
 /*!40000 ALTER TABLE `file_share` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -117,15 +120,15 @@ DROP TABLE IF EXISTS `user_info`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_info` (
   `user_id` varchar(15) NOT NULL COMMENT '用户ID',
-  `nick_name` varchar(20) DEFAULT NULL COMMENT '昵称',
+  `user_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '昵称',
   `email` varchar(200) DEFAULT NULL COMMENT '邮箱',
   `qq_open_id` varchar(50) DEFAULT NULL COMMENT '第三方登录id',
   `qq_avatar` varchar(200) DEFAULT NULL COMMENT 'qq头像',
   `password` varchar(50) DEFAULT NULL COMMENT '密码',
-  `join_time` datetime DEFAULT NULL COMMENT '加入时间',
-  `last_login_time` datetime DEFAULT NULL COMMENT '最后一次登录时间',
+  `creat_time` datetime DEFAULT NULL COMMENT '加入时间',
+  `update_time` datetime DEFAULT NULL COMMENT '最后一次登录时间',
   `status` tinyint(1) DEFAULT NULL COMMENT '用户状态(0禁用 1启用)',
-  `user_space` bigint DEFAULT NULL COMMENT '用户云盘空间 byte',
+  `use_space` bigint DEFAULT NULL COMMENT '用户云盘空间 byte',
   `total_space` bigint DEFAULT NULL COMMENT '总云盘空间 byte',
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户信息表';
@@ -137,6 +140,7 @@ CREATE TABLE `user_info` (
 
 LOCK TABLES `user_info` WRITE;
 /*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
+INSERT INTO `user_info` VALUES ('4444452080','wenzhuo','14783149521@163.com',NULL,'','1bf063b938b032242469ded8b0356054','2025-05-28 03:49:30','2025-06-07 06:56:06',NULL,674147,10485760000000);
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -153,4 +157,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-25 15:15:46
+-- Dump completed on 2025-06-07 15:08:27
